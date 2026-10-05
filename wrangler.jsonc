@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "trending-repos",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "observability": { "enabled": true },
+
+  // Scrape github.com/trending every 4 hours
+  "triggers": { "crons": ["0 */4 * * *"] },
+
+  // Latest scrape result, stored under a single key
+  "kv_namespaces": [{ "binding": "TRENDING" }],
+
+  // History: one row per repo per scrape. Schema lives in migrations/
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "trending-repos",
+      "database_id": "local-only", // replace with the id from `wrangler d1 create trending-repos`
+      "migrations_dir": "migrations"
+    }
+  ]
+
+  // Secret (not committed): GITHUB_TOKEN — set with `wrangler secret put GITHUB_TOKEN`
+  // For local dev, put it in .dev.vars
+}
