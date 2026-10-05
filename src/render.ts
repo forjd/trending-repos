@@ -57,10 +57,13 @@ function renderRepo(repo: Repo, rank: number, maxToday: number): string {
 	<li class="repo">
 		<span class="rank">${String(rank).padStart(2, "0")}</span>
 		<div class="main">
-			<a class="title" href="${esc(repo.url)}">
-				<img class="avatar" src="${esc(repo.avatarUrl)}" alt="" width="32" height="32" loading="lazy">
-				<span><span class="owner">${esc(repo.owner)} /</span> <span class="name">${esc(repo.name)}</span></span>
-			</a>
+			<div class="title-row">
+				<a class="title" href="${esc(repo.url)}">
+					<img class="avatar" src="${esc(repo.avatarUrl)}" alt="" width="32" height="32" loading="lazy">
+					<span><span class="owner">${esc(repo.owner)} /</span> <span class="name">${esc(repo.name)}</span></span>
+				</a>
+				${renderBadges(repo)}
+			</div>
 			${repo.description ? `<p class="desc">${esc(repo.description)}</p>` : ""}
 			${topics.length ? `<ul class="topics">${topics.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
 			<p class="meta">
@@ -76,6 +79,15 @@ function renderRepo(repo: Repo, rank: number, maxToday: number): string {
 			<span class="bar" aria-hidden="true"><span style="width:${share}%"></span></span>
 		</div>
 	</li>`;
+}
+
+function renderBadges(repo: Repo): string {
+	if (repo.isNew) return `<span class="badge badge-new">New today</span>`;
+	// One day on trending is just today, so it says nothing
+	if (repo.daysTrending && repo.daysTrending >= 2) {
+		return `<span class="badge" title="Seen on GitHub trending on ${repo.daysTrending} different days">${repo.daysTrending} days trending</span>`;
+	}
+	return "";
 }
 
 function esc(text: string): string {
@@ -185,6 +197,18 @@ h1 em { color: var(--accent); }
 }
 .repo:first-child .rank { color: var(--accent); }
 .main { min-width: 0; }
+.title-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; }
+.badge {
+	padding: 2px 9px;
+	border-radius: 999px;
+	border: 1px solid var(--border);
+	color: var(--muted);
+	font: 600 11px/1.6 var(--mono);
+	letter-spacing: .04em;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+.badge-new { border-color: transparent; background: var(--accent); color: var(--surface); }
 .title {
 	display: flex;
 	align-items: center;
@@ -249,7 +273,7 @@ footer a:hover { color: var(--accent); }
 	main { padding-top: 48px; }
 	.repo { grid-template-columns: 1fr; gap: 14px; padding: 18px; position: relative; }
 	.rank { position: absolute; top: 18px; right: 18px; font-size: 22px; }
-	.title { padding-right: 36px; }
+	.title-row { padding-right: 36px; }
 	.today { flex-direction: row; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 	.today-count { font-size: 18px; }
 	.bar { flex-basis: 100%; margin-top: 4px; }

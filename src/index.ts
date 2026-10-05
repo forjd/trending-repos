@@ -1,6 +1,6 @@
 import { enrich, scrapeTrending } from "./scrape";
 import { renderPage } from "./render";
-import { saveSnapshot } from "./history";
+import { getTrendingStats, saveSnapshot, type TrendingStats } from "./history";
 import type { Snapshot } from "./types";
 
 const KEY = "latest";
@@ -10,9 +10,27 @@ async function refresh(env: Env): Promise<Snapshot> {
 	const snapshot: Snapshot = { fetchedAt: new Date().toISOString(), repos };
 	// Don't overwrite good data if GitHub changed its markup and we parsed nothing
 	if (repos.length === 0) return snapshot;
+
+	// History is a bonus: if D1 fails, still publish the fresh list without badges
+	try {
+		await saveSnapshot(env.DB, snapshot);
+		addHistory(snapshot, await getTrendingStats(env.DB, snapshot.fetchedAt));
+	} catch (err) {
+		console.error("history:", err);
+	}
+
 	await env.TRENDING.put(KEY, JSON.stringify(snapshot));
-	await saveSnapshot(env.DB, snapshot);
 	return snapshot;
+}
+
+function addHistory(snapshot: Snapshot, stats: TrendingStats): void {
+	const today = snapshot.fetchedAt.slice(0, 10);
+	const trackedBeforeToday = stats.trackingSince !== null && stats.trackingSince < today;
+	for (const repo of snapshot.repos) {
+		const key = `${repo.owner}/${repo.name}`;
+		repo.daysTrending = stats.days.get(key);
+		repo.isNew = trackedBeforeToday && stats.firstSeen.get(key) === today;
+	}
 }
 
 export default {

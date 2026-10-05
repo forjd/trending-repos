@@ -12,6 +12,9 @@ export interface Repo {
 	// Filled in from the GitHub API
 	topics?: string[];
 	homepage?: string | null;
+	// Filled in from D1 history
+	daysTrending?: number; // distinct UTC days seen on trending, including today
+	isNew?: boolean; // first seen today, and we were tracking before today
 }
 
 export interface Snapshot {
