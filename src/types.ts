@@ -10,6 +10,7 @@ export interface Repo {
 	starsToday: number;
 	avatarUrl: string;
 	// Filled in from the GitHub API
+	id?: number; // stable across renames
 	topics?: string[];
 	homepage?: string | null;
 	// Filled in from D1 history

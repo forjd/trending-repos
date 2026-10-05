@@ -8,14 +8,23 @@
     "types": "wrangler types",
     "typecheck": "tsc --noEmit",
     "db:migrate:local": "wrangler d1 migrations apply trending-repos --local",
-    "db:migrate": "wrangler d1 migrations apply trending-repos --remote"
+    "db:migrate": "wrangler d1 migrations apply trending-repos --remote",
+    "test": "vitest run"
   },
   "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.22.0",
     "typescript": "^7.0.2",
+    "vitest": "^4.1.11",
     "wrangler": "^4.147.0"
   },
   "allowScripts": {
     "esbuild@0.28.1": true,
     "workerd@1.20261001.1": true
+  },
+  "overrides": {
+    "@cloudflare/vitest-pool-workers": {
+      "wrangler": "$wrangler",
+      "miniflare": "5.20261001.0-alpha"
+    }
   }
 }

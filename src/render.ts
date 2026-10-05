@@ -14,7 +14,7 @@ export function renderPage(snapshot: Snapshot | null, now = new Date()): string 
 		: "";
 
 	const body = repos.length
-		? `<ol class="repos">${repos.map((r, i) => renderRepo(r, i + 1, maxToday)).join("")}</ol>`
+		? `<ol class="repos" role="list">${repos.map((r, i) => renderRepo(r, i + 1, maxToday)).join("")}</ol>`
 		: `<div class="empty"><p>No trending data yet.</p><p class="muted">The first scrape runs on the next 4-hour tick.</p></div>`;
 
 	return `<!doctype html>
@@ -65,12 +65,12 @@ function renderRepo(repo: Repo, rank: number, maxToday: number): string {
 				${renderBadges(repo)}
 			</div>
 			${repo.description ? `<p class="desc">${esc(repo.description)}</p>` : ""}
-			${topics.length ? `<ul class="topics">${topics.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+			${topics.length ? `<ul class="topics" role="list">${topics.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
 			<p class="meta">
 				${repo.language ? `<span class="lang"><span class="dot" style="background:${langColor}"></span>${esc(repo.language)}</span>` : ""}
-				<span title="${formatFull(repo.stars)} stars">★ ${formatCompact(repo.stars)}</span>
-				<span title="${formatFull(repo.forks)} forks">⑂ ${formatCompact(repo.forks)}</span>
-				${homepage ? `<a class="site" href="${esc(homepage)}" rel="nofollow">${esc(hostname(homepage))} ↗</a>` : ""}
+				<span title="${formatFull(repo.stars)} stars"><span aria-hidden="true">★ ${formatCompact(repo.stars)}</span><span class="sr-only">${formatFull(repo.stars)} stars</span></span>
+				<span title="${formatFull(repo.forks)} forks"><span aria-hidden="true">⑂ ${formatCompact(repo.forks)}</span><span class="sr-only">${formatFull(repo.forks)} forks</span></span>
+				${homepage ? `<a class="site" href="${esc(homepage)}" rel="nofollow ugc noopener">${esc(hostname(homepage))} ↗</a>` : ""}
 			</p>
 		</div>
 		<div class="today">
@@ -110,7 +110,7 @@ function hostname(url: string): string {
 	}
 }
 
-function timeAgo(iso: string, now: Date): string {
+export function timeAgo(iso: string, now: Date): string {
 	const minutes = Math.round((now.getTime() - new Date(iso).getTime()) / 60000);
 	if (minutes < 1) return "just now";
 	if (minutes < 60) return `${minutes} min ago`;
@@ -126,7 +126,7 @@ const CSS = `
 	--surface: #fffdf9;
 	--border: #e6e0d6;
 	--text: #1c1a17;
-	--muted: #77706a;
+	--muted: #6b645e;
 	--accent: #c2410c;
 	--accent-soft: #fbe5d6;
 	--chip: #efe9e0;
@@ -239,6 +239,14 @@ h1 em { color: var(--accent); }
 	font: 13px/1.4 var(--mono);
 }
 .lang { display: inline-flex; align-items: center; gap: 6px; }
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
 .dot { width: 10px; height: 10px; border-radius: 50%; }
 .site { text-decoration: none; }
 .site:hover { color: var(--accent); }
