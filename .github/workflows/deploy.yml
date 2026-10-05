@@ -1,8 +1,11 @@
 name: Deploy
 
+# Manual only for now: deploys run from the dev VM with `npm run deploy`.
+# To deploy on every push, add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID
+# repo secrets, then uncomment the push trigger.
 on:
-  push:
-    branches: [main]
+  # push:
+  #   branches: [main]
   workflow_dispatch:
 
 # Never run two deploys at once; a newer push waits for the current one

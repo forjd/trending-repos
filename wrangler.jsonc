@@ -9,18 +9,19 @@
   "triggers": { "crons": ["0 */4 * * *"] },
 
   // Latest scrape result, stored under a single key
-  "kv_namespaces": [{ "binding": "TRENDING" }],
+  "kv_namespaces": [{ "binding": "TRENDING", "id": "9d067e26557c42198b6ff200929bac00" }],
 
   // History: one row per repo per scrape. Schema lives in migrations/
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "trending-repos",
-      "database_id": "local-only", // replace with the id from `wrangler d1 create trending-repos`
+      "database_id": "60de0073-b3e1-495e-bc8a-da34033aaf43",
       "migrations_dir": "migrations"
     }
   ]
 
-  // Secret (not committed): GITHUB_TOKEN — set with `wrangler secret put GITHUB_TOKEN`
+  // Secrets (not committed): REFRESH_KEY for POST /__refresh, optional GITHUB_TOKEN.
+  // Set with `wrangler secret put <NAME>`
   // For local dev, put it in .dev.vars
 }

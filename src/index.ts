@@ -18,8 +18,20 @@ async function refresh(env: Env): Promise<Snapshot> {
 export default {
 	async fetch(request, env) {
 		const { pathname } = new URL(request.url);
-		const snapshot = await env.TRENDING.get<Snapshot>(KEY, "json");
 
+		// Manual scrape, e.g. right after a deploy: POST with `authorization: Bearer <REFRESH_KEY>`
+		if (pathname === "/__refresh" && request.method === "POST") {
+			if (!env.REFRESH_KEY || request.headers.get("authorization") !== `Bearer ${env.REFRESH_KEY}`) {
+				return new Response("Unauthorized", { status: 401 });
+			}
+			try {
+				const result = await refresh(env);
+				return Response.json({ fetchedAt: result.fetchedAt, repos: result.repos.length });
+			} catch (err) {
+				return Response.json({ error: String(err) }, { status: 500 });
+			}
+		}
+		const snapshot = await env.TRENDING.get<Snapshot>(KEY, "json");
 		if (pathname === "/api/trending") {
 			return Response.json(snapshot ?? { fetchedAt: null, repos: [] });
 		}
