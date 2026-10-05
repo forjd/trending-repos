@@ -3,7 +3,7 @@
 A Cloudflare Worker that scrapes [github.com/trending](https://github.com/trending) every 4 hours and serves it as a styled page.
 
 - **Live:** https://trending-repos.danjdewhurst.workers.dev
-- **Repo:** `forjd/trending-repos` (private)
+- **Repo:** `forjd/trending-repos` (public, MIT)
 
 ## How it works
 
