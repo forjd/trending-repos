@@ -6,6 +6,9 @@ import type { Snapshot } from "./types";
 const KEY = "latest";
 // GitHub lists about 13–25 repos. Fewer than this means the markup changed under us.
 const MIN_REPOS = 5;
+// The cron runs every 4 hours. A scheduled run sooner than this after the last scrape is a
+// stray trigger (an old schedule can keep firing after a change), so it does nothing.
+export const MIN_CRON_INTERVAL_MS = 60 * 60 * 1000;
 
 const SECURITY_HEADERS = {
 	"content-security-policy":
@@ -115,7 +118,12 @@ export default {
 		});
 	},
 
-	async scheduled(_controller, env) {
+	async scheduled(controller, env) {
+		const current = await env.TRENDING.get<Snapshot>(KEY, "json");
+		if (current && controller.scheduledTime - Date.parse(current.fetchedAt) < MIN_CRON_INTERVAL_MS) {
+			console.warn(`scheduled: last scrape was ${current.fetchedAt}, skipping (cron "${controller.cron}")`);
+			return;
+		}
 		// Awaited, not waitUntil, so a failed refresh marks the cron run as failed
 		await refresh(env);
 	},

@@ -1,7 +1,7 @@
-import { env } from "cloudflare:test";
+import { createScheduledController, env } from "cloudflare:test";
 import { exports } from "cloudflare:workers";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { refresh } from "../src/index";
+import handler, { MIN_CRON_INTERVAL_MS, refresh } from "../src/index";
 import type { Snapshot } from "../src/types";
 import { apiRepo, fakeId, mockGitHub, page, row, trendingHtml } from "./helpers";
 
@@ -82,6 +82,31 @@ describe("refresh", () => {
 		mockGitHub(trendingHtml);
 		await refresh(env);
 		expect((await env.TRENDING.get<Snapshot>("latest", "json"))?.fetchedAt).toBe("2999-01-01T00:00:00.000Z");
+	});
+});
+
+describe("scheduled", () => {
+	const runCron = (now: number) => {
+		mockGitHub(trendingHtml);
+		return handler.scheduled!(createScheduledController({ scheduledTime: now, cron: "0 */4 * * *" }), env);
+	};
+	const lastScrapeAgo = (ms: number) =>
+		env.TRENDING.put("latest", JSON.stringify({ fetchedAt: new Date(Date.now() - ms).toISOString(), repos: [] }));
+	const scrapes = async () =>
+		(await env.DB.prepare("SELECT COUNT(DISTINCT fetched_at) AS n FROM snapshot_repos").first<{ n: number }>())!.n;
+
+	it("skips a run soon after the last scrape", async () => {
+		await lastScrapeAgo(MIN_CRON_INTERVAL_MS - 60_000);
+		await runCron(Date.now());
+		expect(await scrapes()).toBe(0);
+	});
+
+	it("scrapes when the last scrape is old enough, or there is none", async () => {
+		await runCron(Date.now());
+		expect(await scrapes()).toBe(1);
+		await lastScrapeAgo(4 * MIN_CRON_INTERVAL_MS);
+		await runCron(Date.now());
+		expect(await scrapes()).toBe(2);
 	});
 });
 
