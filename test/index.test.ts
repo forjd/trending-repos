@@ -9,7 +9,7 @@ const worker = exports.default as Fetcher;
 const get = (path: string, init?: RequestInit) => worker.fetch(`https://example.com${path}`, init);
 
 beforeEach(async () => {
-	await env.DB.exec("DELETE FROM snapshot_repos");
+	await env.DB.exec("DELETE FROM snapshot_repos; DELETE FROM repo_days");
 	await env.TRENDING.delete("latest");
 });
 afterEach(() => {
@@ -108,6 +108,12 @@ describe("badges", () => {
 		const byName = Object.fromEntries(snap.repos.map((r) => [r.name, r]));
 		expect(byName.a).toMatchObject({ daysTrending: 2, isNew: false });
 		expect(byName.new).toMatchObject({ daysTrending: 1, isNew: true });
+	});
+
+	it("keeps one history row per repo per day however often it scrapes", async () => {
+		for (const hour of ["08", "09", "10"]) await scrapeAt(`2026-10-05T${hour}:00:00Z`, five.map((n) => `/o/${n}`));
+		const { count } = (await env.DB.prepare("SELECT COUNT(*) AS count FROM repo_days").first<{ count: number }>())!;
+		expect(count).toBe(5);
 	});
 
 	it("follows a repo through a casing change and a rename", async () => {

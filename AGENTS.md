@@ -78,6 +78,8 @@ A new version takes a few seconds to reach every location. A 404 from `/__refres
 
 D1 table `snapshot_repos`: one row per repo per scrape, primary key `(fetched_at, rank)`. History starts on 2026-10-05.
 
+D1 table `repo_days`: one row per repo per UTC day it trended (owner and name compare ignoring case). Badge stats read this, not `snapshot_repos`, so their cost grows with days trending rather than with scrape count. Free-plan D1 allows 5M rows read a day.
+
 A past row is the same repo if its `repo_id` (GitHub's numeric id, so it survives renames) matches, or its owner and name match ignoring case. `repo_id` is NULL for rows saved before migration 0002, or when the API lookup failed.
 
 Badges are computed at scrape time and stored on each `Repo` in the snapshot:
