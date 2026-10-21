@@ -4,7 +4,7 @@
 
 A Cloudflare Worker that scrapes [GitHub trending](https://github.com/trending) every 4 hours and tracks how many days each repo has trended.
 
-[![Live site](https://img.shields.io/badge/live-trending--repos.danjdewhurst.workers.dev-f38020?logo=cloudflare&logoColor=white)](https://trending-repos.danjdewhurst.workers.dev)
+[![Live site](https://img.shields.io/badge/live-trending.ddewhurst.com-f38020?logo=cloudflare&logoColor=white)](https://trending.ddewhurst.com)
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-f38020?logo=cloudflareworkers&logoColor=white)](https://workers.cloudflare.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -19,7 +19,7 @@ A Cloudflare Worker that scrapes [GitHub trending](https://github.com/trending) 
 - Looks up each repo on the GitHub REST API for exact star and fork counts, topics, homepage, and a numeric id that survives renames.
 - Stores every scrape in D1, so each repo can carry a **New today** or **N days trending** badge.
 - Renders the page from a single KV read, with ETags and caching. The page has no client-side JavaScript and follows your system's light or dark mode.
-- Serves the same snapshot as JSON at [`/api/trending`](https://trending-repos.danjdewhurst.workers.dev/api/trending).
+- Serves the same snapshot as JSON at [`/api/trending`](https://trending.ddewhurst.com/api/trending).
 - Keeps the previous snapshot if a scrape returns fewer than 5 repos or no stars-today counts, which usually means GitHub changed its HTML.
 
 ## How it works
