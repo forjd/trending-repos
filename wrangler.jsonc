@@ -5,6 +5,10 @@
   "compatibility_date": "2026-10-01",
   "observability": { "enabled": true },
 
+  // Served on a custom domain, and on workers.dev too
+  "routes": [{ "pattern": "trending.ddewhurst.com", "custom_domain": true }],
+  "workers_dev": true,
+
   // Scrape github.com/trending every 4 hours
   "triggers": { "crons": ["0 */4 * * *"] },
 

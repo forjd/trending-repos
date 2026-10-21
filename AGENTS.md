@@ -2,7 +2,7 @@
 
 A Cloudflare Worker that scrapes [github.com/trending](https://github.com/trending) every 4 hours and serves it as a styled page.
 
-- **Live:** https://trending-repos.danjdewhurst.workers.dev
+- **Live:** https://trending.ddewhurst.com (also https://trending-repos.danjdewhurst.workers.dev)
 - **Repo:** `forjd/trending-repos` (public, MIT)
 
 ## How it works
@@ -60,7 +60,7 @@ After a deploy that changes data shape, run a scrape so KV picks it up:
 
 ```
 curl -X POST -H "authorization: Bearer $(grep '^REFRESH_KEY=' .dev.vars | cut -d= -f2-)" \
-  https://trending-repos.danjdewhurst.workers.dev/__refresh
+  https://trending.ddewhurst.com/__refresh
 ```
 
 A new version takes a few seconds to reach every location. A 404 from `/__refresh` right after deploying usually means the old version answered, so retry.
@@ -98,4 +98,4 @@ Badges are computed at scrape time and stored on each `Repo` in the snapshot:
 - **Killing dev servers:** `pkill -f wrangler` also matches the shell running it if the command line contains "wrangler". Use `pkill -x workerd` or stop the background task.
 - **To preview on the VM**, use Tailscale Serve (`tailscale serve --bg --https=8787 http://127.0.0.1:8787`), not localhost links. Turn it off afterwards.
 
-_Last updated: 2026-10-05_
+_Last updated: 2026-10-21_
