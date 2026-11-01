@@ -2,3 +2,8 @@ node_modules/
 .wrangler/
 .dev.vars
 .env
+
+# Impeccable working files: decision sketches and review screenshots
+.impeccable/mocks/
+.impeccable/review/
+.impeccable/decision-payload.json
