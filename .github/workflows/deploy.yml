@@ -36,8 +36,5 @@ jobs:
 
       - run: npm test
 
-      - name: Apply D1 migrations
-        run: npx wrangler d1 migrations apply trending-repos --remote
-
-      - name: Deploy Worker
-        run: npx wrangler deploy
+      - name: Apply D1 migrations and deploy
+        run: npm run deploy

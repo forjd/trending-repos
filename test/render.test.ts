@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { renderPage, timeAgo } from "../src/render";
+import { renderPage, STALE_AFTER_MS, timeAgo } from "../src/render";
 import type { Repo } from "../src/types";
 
 const repo = (fields: Partial<Repo> = {}): Repo => ({
@@ -34,9 +34,22 @@ describe("renderPage", () => {
 
 	it("shows the days-trending badge from 2 days", () => {
 		const html = (r: Partial<Repo>) => renderPage({ fetchedAt: "2026-10-05T00:00:00.000Z", repos: [repo(r)] });
-		expect(html({ daysTrending: 1 })).not.toContain("days trending");
-		expect(html({ daysTrending: 3 })).toContain("3 days trending");
+		expect(html({ daysTrending: 1 })).not.toContain("Trended on");
+		expect(html({ daysTrending: 3 })).toContain("Trended on 3 days");
 		expect(html({ isNew: true })).toContain("New today");
+	});
+
+	it("warns when the data is stale", () => {
+		const fetchedAt = "2026-10-05T00:00:00.000Z";
+		const at = (ms: number) => renderPage({ fetchedAt, repos: [repo()] }, new Date(Date.parse(fetchedAt) + ms));
+		expect(at(STALE_AFTER_MS - 60_000)).not.toContain(`class="stale"`);
+		expect(at(STALE_AFTER_MS + 60_000)).toContain(`class="stale"`);
+	});
+
+	it("loads fonts from this site only", () => {
+		const html = renderPage(null);
+		expect(html).toContain(`url(/fonts/inter-v20-latin.woff2)`);
+		expect(html).not.toMatch(/fonts\.(googleapis|gstatic)\.com/);
 	});
 });
 

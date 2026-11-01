@@ -5,6 +5,9 @@
   "compatibility_date": "2026-10-01",
   "observability": { "enabled": true },
 
+  // Self-hosted fonts. Files in public/ are served before the Worker runs
+  "assets": { "directory": "public" },
+
   // Served on a custom domain, and on workers.dev too
   "routes": [{ "pattern": "trending.ddewhurst.com", "custom_domain": true }],
   "workers_dev": true,
@@ -25,7 +28,6 @@
     }
   ]
 
-  // Secrets (not committed): REFRESH_KEY for POST /__refresh, optional GITHUB_TOKEN.
-  // Set with `wrangler secret put <NAME>`
-  // For local dev, put it in .dev.vars
+  // Secrets (not committed): REFRESH_KEY for POST /__refresh, optional GITHUB_TOKEN and
+  // HEALTHCHECK_URL. Set with `wrangler secret put <NAME>`. For local dev, put them in .dev.vars
 }

@@ -40,8 +40,9 @@ export interface TrendingStats {
 	days: Map<number, number>;
 	// First day each repo appeared (YYYY-MM-DD), keyed by rank in the current scrape
 	firstSeen: Map<number, string>;
-	// First day we have any history for (YYYY-MM-DD)
-	trackingSince: string | null;
+	// Whether any scrape was saved on the previous UTC day. Without it, a repo "first seen
+	// today" may have trended while history was missing (before it started, or during a gap)
+	scrapedYesterday: boolean;
 }
 
 type StatsRow = { rank: number; first_seen: string; days: number };
@@ -50,7 +51,9 @@ type StatsRow = { rank: number; first_seen: string; days: number };
 // grows with days trending, not with scrapes. A past day counts as the same repo if its
 // GitHub id matches (survives renames) or its owner/name matches ignoring case.
 export async function getTrendingStats(db: D1Database, fetchedAt: string): Promise<TrendingStats> {
-	const [repos, since] = await db.batch<StatsRow | { since: string | null }>([
+	const today = fetchedAt.slice(0, 10);
+	const yesterday = new Date(Date.parse(today) - 86_400_000).toISOString().slice(0, 10);
+	const [repos, prev] = await db.batch<StatsRow | { found: number }>([
 		db
 			.prepare(
 				`SELECT c.rank,
@@ -67,14 +70,20 @@ export async function getTrendingStats(db: D1Database, fetchedAt: string): Promi
 				GROUP BY c.rank`,
 			)
 			.bind(fetchedAt),
-		db.prepare(`SELECT substr(MIN(fetched_at), 1, 10) AS since FROM snapshot_repos`),
+		// fetched_at is ISO 8601, so a string range covers the day and uses the primary key
+		db
+			.prepare(`SELECT EXISTS (SELECT 1 FROM snapshot_repos WHERE fetched_at >= ? AND fetched_at < ?) AS found`)
+			.bind(yesterday, today),
 	]);
 
-	const stats: TrendingStats = { days: new Map(), firstSeen: new Map(), trackingSince: null };
+	const stats: TrendingStats = {
+		days: new Map(),
+		firstSeen: new Map(),
+		scrapedYesterday: (prev.results[0] as { found: number } | undefined)?.found === 1,
+	};
 	for (const row of repos.results as StatsRow[]) {
 		stats.days.set(row.rank, row.days);
 		stats.firstSeen.set(row.rank, row.first_seen);
 	}
-	stats.trackingSince = (since.results[0] as { since: string | null } | undefined)?.since ?? null;
 	return stats;
 }
