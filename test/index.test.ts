@@ -4,6 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import handler from "../src/index";
 import { etagMatches } from "../src/http";
 import { MIN_CRON_INTERVAL_MS, refresh } from "../src/refresh";
+import { STALE_AFTER_MS } from "../src/render";
+import { pingHealthcheck } from "../src/health";
 import type { Snapshot } from "../src/types";
 import { apiRepo, fakeId, HEALTHCHECK_URL, mockGitHub, page, row, trendingHtml } from "./helpers";
 
@@ -56,6 +58,23 @@ describe("routes", () => {
 		expect((await get("/", { headers: { "if-none-match": `W/${etag}` } })).status).toBe(304);
 		expect((await get("/", { headers: { "if-none-match": `"other", W/${etag}` } })).status).toBe(304);
 		expect((await get("/", { headers: { "if-none-match": `W/"other"` } })).status).toBe(200);
+	});
+
+	it("changes the page ETag when the stale notice appears", async () => {
+		// "12 hours ago" on both sides of the 12-hour limit
+		const fetchedAt = "2026-10-05T00:00:00.000Z";
+		await env.TRENDING.put("latest", JSON.stringify({ fetchedAt, repos: [] }));
+		const at = (ms: number, init?: RequestInit) => {
+			vi.useFakeTimers({ now: Date.parse(fetchedAt) + ms, toFake: ["Date"] });
+			return get("/", init);
+		};
+		const before = await at(STALE_AFTER_MS - 60_000);
+		const etag = before.headers.get("etag")!;
+		expect(await before.text()).not.toContain(`class="stale"`);
+		const after = await at(STALE_AFTER_MS + 60_000, { headers: { "if-none-match": etag } });
+		expect(after.status).toBe(200);
+		expect(after.headers.get("etag")).not.toBe(etag);
+		expect(await after.text()).toContain(`class="stale"`);
 	});
 
 	it("answers HEAD without a body", async () => {
@@ -114,6 +133,14 @@ describe("refresh", () => {
 		await expect(refresh(env)).rejects.toThrow(/stars-today/);
 	});
 
+	it("reports a history failure from /__refresh", async () => {
+		mockGitHub(trendingHtml);
+		const req = new Request("https://example.com/__refresh", { method: "POST", headers: { authorization: "Bearer test-key" } });
+		const res = await handler.fetch!(req as Request<unknown, IncomingRequestCfProperties>, { ...env, DB: brokenDb });
+		expect(res.status).toBe(200);
+		expect(await res.json()).toMatchObject({ repos: 5, history: expect.stringMatching(/^failed: .*no such table/) });
+	});
+
 	it("still publishes when D1 fails, and reports the history error", async () => {
 		mockGitHub(trendingHtml);
 		const { snapshot, historyError } = await refresh({ ...env, DB: brokenDb });
@@ -136,8 +163,8 @@ describe("scheduled", () => {
 		const run = handler.scheduled!(createScheduledController({ scheduledTime: now, cron: "0 */4 * * *" }), cronEnv);
 		return { fetch, run };
 	};
-	const lastScrapeAgo = (ms: number) =>
-		env.TRENDING.put("latest", JSON.stringify({ fetchedAt: new Date(Date.now() - ms).toISOString(), repos: [] }));
+	const lastScrapeAgo = (ms: number, repos: object[] = []) =>
+		env.TRENDING.put("latest", JSON.stringify({ fetchedAt: new Date(Date.now() - ms).toISOString(), repos }));
 	const scrapes = async () =>
 		(await env.DB.prepare("SELECT COUNT(DISTINCT fetched_at) AS n FROM snapshot_repos").first<{ n: number }>())!.n;
 
@@ -163,7 +190,40 @@ describe("scheduled", () => {
 		vi.restoreAllMocks();
 		const skipped = runCron(Date.now(), { ...env, HEALTHCHECK_URL });
 		await skipped.run;
+		expect(await scrapes()).toBe(1);
 		expect(pings(skipped.fetch)).toEqual([HEALTHCHECK_URL]);
+	});
+
+	it("doesn't clear a history failure when it skips a run", async () => {
+		// Published recently, but without badge stats because D1 failed
+		await lastScrapeAgo(60_000, [{ owner: "o", name: "a" }]);
+		const { fetch, run } = runCron(Date.now(), { ...env, HEALTHCHECK_URL });
+		await run;
+		expect(await scrapes()).toBe(0);
+		expect(pings(fetch)).toEqual([`${HEALTHCHECK_URL}/fail`]);
+	});
+
+	it("sends no ping without a health check URL", async () => {
+		const { fetch, run } = runCron(Date.now());
+		await run;
+		expect(pings(fetch)).toEqual([]);
+	});
+
+	it("doesn't fail a good run when the health check is down", async () => {
+		for (const failure of [() => new Response("down", { status: 500 }), () => Promise.reject(new Error("timeout"))]) {
+			vi.restoreAllMocks();
+			const fetch = mockGitHub(trendingHtml);
+			const real = fetch.getMockImplementation()!;
+			fetch.mockImplementation(async (input, init) =>
+				String(input instanceof Request ? input.url : input).startsWith("https://hc.example") ? failure() : real(input, init),
+			);
+			await env.TRENDING.delete("latest");
+			const run = handler.scheduled!(
+				createScheduledController({ scheduledTime: Date.now(), cron: "0 */4 * * *" }),
+				{ ...env, HEALTHCHECK_URL },
+			);
+			await expect(run).resolves.toBeUndefined();
+		}
 	});
 
 	it("fails the run and pings /fail when history can't be saved", async () => {
@@ -229,5 +289,15 @@ describe("badges", () => {
 		const byName = Object.fromEntries(snap.repos.map((r) => [r.name, r]));
 		expect(byName.B).toMatchObject({ daysTrending: 2, isNew: false });
 		expect(byName.renamed).toMatchObject({ daysTrending: 2, isNew: false });
+	});
+});
+
+describe("pingHealthcheck", () => {
+	it("posts the error to <url>/fail, without a doubled slash", async () => {
+		const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("OK"));
+		await pingHealthcheck(`${HEALTHCHECK_URL}/`, "boom");
+		const [url, init] = fetch.mock.calls[0];
+		expect(String(url)).toBe(`${HEALTHCHECK_URL}/fail`);
+		expect(init).toMatchObject({ method: "POST", body: "boom" });
 	});
 });

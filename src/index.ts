@@ -74,8 +74,13 @@ export default {
 		const current = await env.TRENDING.get<Snapshot>(KEY, "json");
 		if (current && controller.scheduledTime - Date.parse(current.fetchedAt) < MIN_CRON_INTERVAL_MS) {
 			console.warn(`scheduled: last scrape was ${current.fetchedAt}, skipping (cron "${controller.cron}")`);
-			// The data is fresh, so this still counts as a healthy run
-			await pingHealthcheck(env.HEALTHCHECK_URL || undefined);
+			// The data is fresh, so report how that scrape went. A snapshot published after a D1
+			// failure has no badge stats, and a success ping here would clear that failure
+			const historySaved = current.repos.some((r) => r.daysTrending !== undefined);
+			await pingHealthcheck(
+				env.HEALTHCHECK_URL || undefined,
+				historySaved ? undefined : `last scrape (${current.fetchedAt}) was published without history`,
+			);
 			return;
 		}
 		// Awaited, not waitUntil, so a failed refresh marks the cron run as failed

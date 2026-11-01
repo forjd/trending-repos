@@ -80,7 +80,7 @@ A new version takes a few seconds to reach every location. A 404 from `/__refres
 |---|---|---|
 | `REFRESH_KEY` | Worker secret, and `.dev.vars` locally | Guards `POST /__refresh` |
 | `GITHUB_TOKEN` | Worker secret, and `.dev.vars` locally | Optional. Use a fine-grained token with public read-only access and no permissions. Without it, API lookups are unauthenticated (60/hour, shared with other Workers on the same IP), so most repos miss topics and ids. The page still works |
-| `HEALTHCHECK_URL` | Worker secret | Optional. A Healthchecks.io ping URL (4-hour period). Each cron run pings it, or `<url>/fail` with the error. A run skipped by the one-hour guard also pings, because the data is fresh |
+| `HEALTHCHECK_URL` | Worker secret | Optional. A Healthchecks.io ping URL (4-hour period). Each cron run pings it, or `<url>/fail` with the error. A run skipped by the one-hour guard reports the last scrape instead: success if it saved history, `/fail` if not |
 
 `.dev.vars` and `.env` are gitignored. Never commit or print their values.
 

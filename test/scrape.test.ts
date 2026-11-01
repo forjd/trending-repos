@@ -69,11 +69,13 @@ describe("enrich", () => {
 		}));
 
 	it("adds API fields including the stable id", async () => {
-		mockGitHub("", () => Response.json(apiRepo({ id: 42, stargazers_count: 999 })));
+		mockGitHub("", () =>
+			Response.json({ ...apiRepo({ id: 42, stargazers_count: 999 }), owner: { avatar_url: "https://avatars.githubusercontent.com/u/1?v=4" } }),
+		);
 		const [repo] = await enrich(repos(1), undefined);
 		expect(repo).toMatchObject({ id: 42, stars: 999, topics: ["cli"] });
 		// Sized down from GitHub's default of about 460 pixels
-		expect(repo.avatarUrl).toBe("https://avatars.githubusercontent.com/u/1?s=64");
+		expect(repo.avatarUrl).toBe("https://avatars.githubusercontent.com/u/1?v=4&s=64");
 	});
 
 	it("stops calling the API once rate limited", async () => {
