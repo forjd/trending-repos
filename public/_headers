@@ -4,3 +4,7 @@
 # Font file names carry the upstream version. Give a changed font a new name.
 /fonts/*.woff2
   Cache-Control: public, max-age=31536000, immutable
+
+# The link preview image. Sites that show it keep their own copy anyway
+/og.png
+  Cache-Control: public, max-age=86400

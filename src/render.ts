@@ -7,6 +7,14 @@ export function isStale(fetchedAt: string, now: Date): boolean {
 	return now.getTime() - Date.parse(fetchedAt) > STALE_AFTER_MS;
 }
 
+// Link previews need absolute URLs. The workers.dev address points here too
+export const SITE_URL = "https://trending.ddewhurst.com";
+const TITLE = "Trending Repos: GitHub trending, with memory";
+const DESCRIPTION =
+	"The repositories gaining the most stars on GitHub today, charted every four hours with how many days each has trended.";
+// public/og.png, made from scripts/og-image.html
+const OG_IMAGE_ALT = "Trending Repos, printed as a yellow and black singles chart with positions, days on and stars today.";
+
 // History in D1 starts here, so "days on" can't count further back
 const HISTORY_START = "5 Oct 2026";
 // A run this long prints heavier in "Days on", so staying power reads at a glance
@@ -48,8 +56,20 @@ export function renderPage(snapshot: Snapshot | null, now = new Date()): string 
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Trending Repos: GitHub trending, with memory</title>
-<meta name="description" content="The repositories gaining the most stars on GitHub today, charted every four hours with how many days each has trended.">
+<title>${TITLE}</title>
+<meta name="description" content="${DESCRIPTION}">
+<link rel="canonical" href="${SITE_URL}/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Trending Repos">
+<meta property="og:url" content="${SITE_URL}/">
+<meta property="og:title" content="${TITLE}">
+<meta property="og:description" content="${DESCRIPTION}">
+<meta property="og:image" content="${SITE_URL}/og.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${OG_IMAGE_ALT}">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#ffde17">
 <link rel="icon" href="data:image/svg+xml,${encodeURIComponent(FAVICON)}">
 <link rel="preload" href="/fonts/big-shoulders-display-v24-latin.woff2" as="font" type="font/woff2" crossorigin>

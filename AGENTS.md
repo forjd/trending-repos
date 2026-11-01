@@ -39,7 +39,8 @@ If D1 fails, the scrape is still published without badges. `/__refresh` then ret
 | `.impeccable/surfaces/` | The page's design brief and direction contract |
 | `src/http.ts` | ETag matching and the `REFRESH_KEY` check |
 | `src/health.ts` | Health check pings |
-| `public/` | Static assets: self-hosted fonts (SIL OFL, licenses alongside) and `_headers` |
+| `public/` | Static assets: self-hosted fonts (SIL OFL, licenses alongside), `og.png` and `_headers` |
+| `scripts/og-image.html` | Source for `public/og.png`, the 1200×630 link preview image. Its rows are abstract, so the cached image never shows an old chart |
 | `src/types.ts` | `Repo` and `Snapshot` |
 | `test/` | Vitest tests, run inside workerd. `fixtures/trending.html` is a trimmed copy of the real page |
 | `migrations/` | D1 schema. Add a new numbered file; never edit an applied one |
@@ -58,6 +59,7 @@ If D1 fails, the scrape is still published without badges. `/__refresh` then ret
 | `npm run types` | Regenerate `worker-configuration.d.ts`. Secret names come from `.dev.vars`, so it must list `GITHUB_TOKEN`, `HEALTHCHECK_URL` and `REFRESH_KEY` (empty values are fine) |
 | `npm run db:migrate:local` | Apply migrations to the local D1 |
 | `npm run db:migrate` | Apply migrations to production D1 |
+| `npm run og` | Regenerate `public/og.png` from `scripts/og-image.html` with headless Chrome |
 | `npm run deploy` | Apply pending D1 migrations to production, then deploy to Cloudflare |
 
 Query production history: `npx wrangler d1 execute trending-repos --remote --command "SELECT ..."`
@@ -107,6 +109,7 @@ Badges are computed at scrape time and stored on each `Repo` in the snapshot:
 - **Bump `wrangler` and `@cloudflare/vitest-plugin` together.** They release in step, and the plugin pins exact wrangler and miniflare versions. Check `npm ls wrangler miniflare` shows one copy of each. If they differ, add `overrides` for the plugin. (`@cloudflare/vitest-pool-workers` is the plugin's old, deprecated name.)
 - **`src/index.ts` must export only the default handler.** workerd rejects any other export that isn't an entrypoint (for example `export const X = 1`), so `wrangler dev` fails and a deploy may too. Tests don't catch this; put helpers in their own modules.
 - **Cloudflare weakens ETags when it compresses a response** (`"x"` becomes `W/"x"`), so `If-None-Match` comes back weak. `etagMatches()` ignores the `W/` prefix.
+- **Link preview tags use absolute URLs on `SITE_URL`** (`src/render.ts`), also on workers.dev. Change it if the domain changes. Sharing sites cache previews, so a new `og.png` can take days to show.
 - **Fonts are self-hosted** in `public/fonts` and cached for a year as immutable. To change a font file, give it a new name (the names carry the upstream version) and update `src/render.ts`.
 - **Cron changes can take hours to apply, or not apply at all.** On 2026-10-05 a test `* * * * *` schedule kept firing for over 10 hours after it was replaced, and burned through D1's daily read limit. Check what's actually firing with the GraphQL `workersInvocationsScheduled` dataset, not the schedules API, which showed the new schedule the whole time. To fix it, `PUT` an empty schedule list to `/workers/scripts/trending-repos/schedules`, then the real one. As a guard, `scheduled()` skips any run within an hour of the last scrape. Use `/__refresh` to scrape sooner.
 - **Changing `database_id` gives you a fresh local D1.** Run `npm run db:migrate:local` again.

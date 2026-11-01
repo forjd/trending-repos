@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { chartTime, renderPage, STALE_AFTER_MS, timeAgo } from "../src/render";
+import { chartTime, renderPage, SITE_URL, STALE_AFTER_MS, timeAgo } from "../src/render";
 import type { Repo } from "../src/types";
 
 const FETCHED_AT = "2026-10-05T00:00:00.000Z";
@@ -146,6 +146,19 @@ describe("freshness and fonts", () => {
 		expect(html).toContain("url(/fonts/archivo-v25-latin.woff2)");
 		expect(html).toContain("url(/fonts/big-shoulders-display-v24-latin.woff2)");
 		expect(html).not.toMatch(/fonts\.(googleapis|gstatic)\.com/);
+	});
+});
+
+describe("link previews", () => {
+	it("gives sharing sites absolute URLs on the custom domain", () => {
+		const html = renderPage(null);
+		expect(SITE_URL).toBe("https://trending.ddewhurst.com");
+		expect(html).toContain(`<link rel="canonical" href="${SITE_URL}/">`);
+		expect(html).toContain(`<meta property="og:url" content="${SITE_URL}/">`);
+		expect(html).toContain(`<meta property="og:image" content="${SITE_URL}/og.png">`);
+		expect(html).toContain(`<meta name="twitter:card" content="summary_large_image">`);
+		expect(html).toMatch(/<meta property="og:title" content="[^"]+">/);
+		expect(html).toMatch(/<meta property="og:description" content="[^"]+">/);
 	});
 });
 
