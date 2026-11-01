@@ -22,6 +22,7 @@ describe("scrapeTrending", () => {
 			stars: 4548,
 			starsToday: 1430,
 			description: "Next generation e2e testing framework for web and mobile apps.",
+			avatarUrl: "https://github.com/tester-army.png?size=64",
 		});
 		expect(repos[3].description).toBeNull();
 		for (const r of repos) expect(r.description ?? "").not.toMatch(/\s{2}|^\s|\s$/);
@@ -68,9 +69,13 @@ describe("enrich", () => {
 		}));
 
 	it("adds API fields including the stable id", async () => {
-		mockGitHub("", () => Response.json(apiRepo({ id: 42, stargazers_count: 999 })));
+		mockGitHub("", () =>
+			Response.json({ ...apiRepo({ id: 42, stargazers_count: 999 }), owner: { avatar_url: "https://avatars.githubusercontent.com/u/1?v=4" } }),
+		);
 		const [repo] = await enrich(repos(1), undefined);
 		expect(repo).toMatchObject({ id: 42, stars: 999, topics: ["cli"] });
+		// Sized down from GitHub's default of about 460 pixels
+		expect(repo.avatarUrl).toBe("https://avatars.githubusercontent.com/u/1?v=4&s=64");
 	});
 
 	it("stops calling the API once rate limited", async () => {

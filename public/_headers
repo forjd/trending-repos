@@ -1,0 +1,6 @@
+/*
+  X-Content-Type-Options: nosniff
+
+# Font file names carry the upstream version. Give a changed font a new name.
+/fonts/*.woff2
+  Cache-Control: public, max-age=31536000, immutable

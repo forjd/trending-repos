@@ -9,7 +9,10 @@ export interface ApiRepo {
 	topics?: string[];
 }
 
-// Stubs fetch: the trending page returns `html`, API lookups return `api(owner/name)`
+export const HEALTHCHECK_URL = "https://hc.example/ping/abc";
+
+// Stubs fetch: the trending page returns `html`, API lookups return `api(owner/name)`,
+// and pings to HEALTHCHECK_URL return 200
 export function mockGitHub(
 	html: string,
 	api: (fullName: string) => Response = (fullName) => Response.json(apiRepo({ id: fakeId(fullName) })),
@@ -18,6 +21,7 @@ export function mockGitHub(
 		const url = new URL(input instanceof Request ? input.url : String(input));
 		if (url.hostname === "github.com" && url.pathname === "/trending") return new Response(html);
 		if (url.hostname === "api.github.com") return api(url.pathname.replace(/^\/repos\//, ""));
+		if (url.hostname === "hc.example") return new Response("OK");
 		throw new Error(`unexpected fetch ${url}`);
 	});
 }

@@ -6,6 +6,9 @@ const USER_AGENT = "trending-repos (Cloudflare Worker)";
 const TIMEOUT_MS = 10_000;
 // Workers allows 6 open connections at once; more just queue
 const CONCURRENCY = 6;
+// The page shows avatars at 32 CSS pixels; 64 stays sharp on 2x screens.
+// Without a size, GitHub sends about 460 pixels.
+const AVATAR_PX = 64;
 
 // Parses github.com/trending with HTMLRewriter.
 export async function scrapeTrending(): Promise<Repo[]> {
@@ -78,7 +81,7 @@ export async function scrapeTrending(): Promise<Repo[]> {
 				stars: toNumber(row.stars),
 				forks: toNumber(row.forks),
 				starsToday: toNumber(row.starsToday),
-				avatarUrl: `https://github.com/${owner}.png`,
+				avatarUrl: `https://github.com/${owner}.png?size=${AVATAR_PX}`,
 			},
 		];
 	});
@@ -126,7 +129,7 @@ export async function enrich(repos: Repo[], token: string | undefined): Promise<
 				forks: data.forks_count,
 				topics: data.topics ?? [],
 				homepage: data.homepage || null,
-				avatarUrl: data.owner.avatar_url,
+				avatarUrl: sizedAvatar(data.owner.avatar_url),
 			};
 		} catch (err) {
 			console.warn(`enrich ${label}:`, err);
@@ -157,6 +160,16 @@ interface GitHubRepo {
 	topics?: string[];
 	homepage: string | null;
 	owner: { avatar_url: string };
+}
+
+function sizedAvatar(url: string): string {
+	try {
+		const u = new URL(url);
+		u.searchParams.set("s", String(AVATAR_PX));
+		return u.toString();
+	} catch {
+		return url;
+	}
 }
 
 function toNumber(text: string): number {

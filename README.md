@@ -17,10 +17,11 @@ A Cloudflare Worker that scrapes [GitHub trending](https://github.com/trending) 
 
 - Scrapes the trending page on a cron trigger every 4 hours.
 - Looks up each repo on the GitHub REST API for exact star and fork counts, topics, homepage, and a numeric id that survives renames.
-- Stores every scrape in D1, so each repo can carry a **New today** or **N days trending** badge.
+- Stores every scrape in D1, so each repo can carry a **New today** or **Trended on N days** badge.
 - Renders the page from a single KV read, with ETags and caching. The page has no client-side JavaScript and follows your system's light or dark mode.
 - Serves the same snapshot as JSON at [`/api/trending`](https://trending.ddewhurst.com/api/trending).
 - Keeps the previous snapshot if a scrape returns fewer than 5 repos or no stars-today counts, which usually means GitHub changed its HTML.
+- Shows a notice on the page when the data is more than 12 hours old, and can ping a [Healthchecks.io](https://healthchecks.io) check after each cron run.
 
 ## How it works
 
@@ -68,6 +69,7 @@ Without a `GITHUB_TOKEN`, API lookups are limited to 60 an hour and most repos m
 ```ini
 REFRESH_KEY=some-long-random-string
 GITHUB_TOKEN=github_pat_...
+HEALTHCHECK_URL=https://hc-ping.com/...   # optional
 ```
 
 ### Deploy your own
@@ -77,15 +79,17 @@ GITHUB_TOKEN=github_pat_...
    npx wrangler kv namespace create TRENDING
    npx wrangler d1 create trending-repos
    ```
-2. Apply the schema: `npm run db:migrate`
-3. Set the secrets:
+2. Set the secrets:
    ```bash
    npx wrangler secret put REFRESH_KEY
-   npx wrangler secret put GITHUB_TOKEN   # optional
+   npx wrangler secret put GITHUB_TOKEN      # optional
+   npx wrangler secret put HEALTHCHECK_URL   # optional
    ```
-4. Deploy: `npm run deploy`
+3. Deploy: `npm run deploy`. It applies new D1 migrations first, then deploys the Worker.
 
 For `GITHUB_TOKEN`, use a fine-grained token with public read-only access and no extra permissions.
+
+For `HEALTHCHECK_URL`, create a check on [Healthchecks.io](https://healthchecks.io) with a 4-hour period and use its ping URL. Each cron run pings it, or pings `<url>/fail` with the error when the scrape or the history write fails.
 
 ## Development
 
@@ -95,16 +99,23 @@ For `GITHUB_TOKEN`, use a fine-grained token with public read-only access and no
 | `npm test` | Vitest inside the Workers runtime (network is mocked) |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run types` | Regenerate `worker-configuration.d.ts` after editing `wrangler.jsonc` |
+| `npm run deploy` | Apply D1 migrations, then deploy |
+
+CI runs the typecheck and tests on every push to `main` and on every pull request.
 
 ## Project layout
 
 ```
 src/
-  index.ts      routes, cron handler, refresh()
+  index.ts      routes and cron handler (exports only the handler)
+  refresh.ts    refresh(): scrape, enrich, save history, publish to KV
   scrape.ts     trending page parser + GitHub API enrichment
   history.ts    D1 writes and badge stats
   render.ts     the page: HTML and CSS in one template
+  http.ts       ETag matching and the refresh key check
+  health.ts     health check pings
   types.ts      Repo and Snapshot
+public/fonts/   self-hosted fonts (SIL OFL) with their licenses
 test/           Vitest tests and a fixture copy of the trending page
 migrations/     D1 schema
 ```

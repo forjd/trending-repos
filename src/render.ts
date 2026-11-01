@@ -1,5 +1,12 @@
 import type { Repo, Snapshot } from "./types";
 
+// The cron runs every 4 hours, so this is three missed runs in a row
+export const STALE_AFTER_MS = 12 * 60 * 60 * 1000;
+
+export function isStale(fetchedAt: string, now: Date): boolean {
+	return now.getTime() - Date.parse(fetchedAt) > STALE_AFTER_MS;
+}
+
 export function renderPage(snapshot: Snapshot | null, now = new Date()): string {
 	const repos = snapshot?.repos ?? [];
 	const maxToday = Math.max(1, ...repos.map((r) => r.starsToday));
@@ -12,6 +19,10 @@ export function renderPage(snapshot: Snapshot | null, now = new Date()): string 
 				updated <time datetime="${esc(snapshot.fetchedAt)}" title="${esc(snapshot.fetchedAt)}">${timeAgo(snapshot.fetchedAt, now)}</time>
 			</p>`
 		: "";
+	const stale =
+		snapshot && isStale(snapshot.fetchedAt, now)
+			? `<p class="stale" role="status">This list is from ${timeAgo(snapshot.fetchedAt, now)}. Updates seem to have stopped, so it may be out of date.</p>`
+			: "";
 
 	const body = repos.length
 		? `<ol class="repos" role="list">${repos.map((r, i) => renderRepo(r, i + 1, maxToday)).join("")}</ol>`
@@ -25,9 +36,9 @@ export function renderPage(snapshot: Snapshot | null, now = new Date()): string 
 <title>Trending Repos</title>
 <meta name="description" content="The repositories gaining the most stars on GitHub today, refreshed every four hours.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>★</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="preload" href="/fonts/inter-v20-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/instrument-serif-v5-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/jetbrains-mono-v24-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style>${CSS}</style>
 </head>
 <body>
@@ -36,6 +47,7 @@ export function renderPage(snapshot: Snapshot | null, now = new Date()): string 
 		<p class="eyebrow">GitHub Trending · Today</p>
 		<h1>What developers are <em>starring</em> right now</h1>
 		${summary}
+		${stale}
 	</header>
 	${body}
 	<footer>
@@ -83,9 +95,9 @@ function renderRepo(repo: Repo, rank: number, maxToday: number): string {
 
 function renderBadges(repo: Repo): string {
 	if (repo.isNew) return `<span class="badge badge-new">New today</span>`;
-	// One day on trending is just today, so it says nothing
+	// One day on trending is just today, so it says nothing. The days needn't be in a row
 	if (repo.daysTrending && repo.daysTrending >= 2) {
-		return `<span class="badge" title="Seen on GitHub trending on ${repo.daysTrending} different days">${repo.daysTrending} days trending</span>`;
+		return `<span class="badge" title="Seen on GitHub trending on ${repo.daysTrending} different days, not always in a row">Trended on ${repo.daysTrending} days</span>`;
 	}
 	return "";
 }
@@ -120,7 +132,21 @@ export function timeAgo(iso: string, now: Date): string {
 	return `${days} day${days === 1 ? "" : "s"} ago`;
 }
 
+// Unicode ranges from Google Fonts' latin and latin-ext subsets. Font files are in public/fonts
+const LATIN =
+	"U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD";
+const LATIN_EXT =
+	"U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF";
+
+const fontFace = (family: string, file: string, style: string, weight: string, range: string) =>
+	`@font-face { font-family: "${family}"; font-style: ${style}; font-weight: ${weight}; font-display: swap; src: url(/fonts/${file}) format("woff2"); unicode-range: ${range}; }`;
+
 const CSS = `
+${fontFace("Instrument Serif", "instrument-serif-v5-latin.woff2", "normal", "400", LATIN)}
+${fontFace("Instrument Serif", "instrument-serif-v5-italic-latin.woff2", "italic", "400", LATIN)}
+${fontFace("Inter", "inter-v20-latin.woff2", "normal", "400 600", LATIN)}
+${fontFace("Inter", "inter-v20-latin-ext.woff2", "normal", "400 600", LATIN_EXT)}
+${fontFace("JetBrains Mono", "jetbrains-mono-v24-latin.woff2", "normal", "400 600", LATIN)}
 :root {
 	--bg: #f6f3ee;
 	--surface: #fffdf9;
@@ -177,6 +203,13 @@ h1 em { color: var(--accent); }
 .summary { margin: 20px 0 0; color: var(--muted); }
 .summary strong { color: var(--text); font-weight: 600; }
 .sep { margin: 0 6px; }
+.stale {
+	margin: 16px 0 0;
+	padding: 10px 14px;
+	border-radius: 10px;
+	background: var(--accent-soft);
+	color: var(--text);
+}
 
 .repos { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .repo {
