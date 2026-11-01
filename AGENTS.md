@@ -33,7 +33,10 @@ If D1 fails, the scrape is still published without badges. `/__refresh` then ret
 | `src/refresh.ts` | `refresh()`: scrape, enrich, save history, publish to KV |
 | `src/scrape.ts` | Trending page parser and GitHub API enrichment |
 | `src/history.ts` | D1 writes and badge stats (days trending, first seen) |
-| `src/render.ts` | The page: HTML and CSS in one template, no client JS. Shows a notice when data is over 12 hours old |
+| `src/render.ts` | The page: HTML and CSS in one template, no client JS, styled as a printed singles chart. Shows a notice when data is over 12 hours old |
+| `PRODUCT.md` | Product context: users, purpose, constraints |
+| `DESIGN.md`, `.impeccable/design.json` | The page's design system: tokens, type, layout rules and recorded adaptations. Read before changing `render.ts` |
+| `.impeccable/surfaces/` | The page's design brief and direction contract |
 | `src/http.ts` | ETag matching and the `REFRESH_KEY` check |
 | `src/health.ts` | Health check pings |
 | `public/` | Static assets: self-hosted fonts (SIL OFL, licenses alongside) and `_headers` |
@@ -95,7 +98,7 @@ A past row is the same repo if its `repo_id` (GitHub's numeric id, so it survive
 Badges are computed at scrape time and stored on each `Repo` in the snapshot:
 
 - `isNew`: first seen today (UTC), and only when a scrape was saved yesterday. Otherwise every repo would be "new" on the first day of history, or after a gap.
-- `daysTrending`: distinct UTC days seen, not necessarily in a row. The page shows it from 2 days onward as "Trended on N days".
+- `daysTrending`: distinct UTC days seen, not necessarily in a row. The page shows it in the "Days on" column (screen readers hear "Trended on N days"), and sets runs of 7 days or more heavier.
 
 ## Gotchas
 
