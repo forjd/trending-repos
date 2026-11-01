@@ -1,0 +1,59 @@
+<!doctype html>
+<!--
+	Source for public/og.png, the 1200x630 link preview image.
+	Regenerate from the repo root with: npm run og
+	The rows are abstract on purpose: the image is cached by every site that shows it,
+	so it must not show a particular day's repos.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face { font-family: "Big Shoulders Display"; font-weight: 800 900; src: url(../public/fonts/big-shoulders-display-v24-latin.woff2) format("woff2"); }
+@font-face { font-family: "Archivo"; font-weight: 400 800; src: url(../public/fonts/archivo-v25-latin.woff2) format("woff2"); }
+* { box-sizing: border-box; margin: 0; }
+html, body { width: 1200px; height: 630px; overflow: hidden; }
+body { background: #fff; color: #111; font-family: Archivo, sans-serif; font-variant-numeric: tabular-nums; }
+.mast { background: #ffde17; border-bottom: 8px solid #111; padding: 48px 64px 40px; height: 318px; display: flex; flex-direction: column; justify-content: flex-end; }
+h1 { white-space: nowrap; font: 900 166px/.78 "Big Shoulders Display", sans-serif; text-transform: uppercase; letter-spacing: -.005em; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; margin-top: 22px; font-weight: 800; font-size: 24px; letter-spacing: .06em; text-transform: uppercase; }
+.tag span:last-child { font-weight: 600; letter-spacing: .02em; text-transform: none; }
+.heads { display: grid; grid-template-columns: 130px 110px 1fr 200px; column-gap: 24px; padding: 16px 64px 10px; border-bottom: 2px solid #111; font-weight: 800; font-size: 14px; letter-spacing: .09em; text-transform: uppercase; white-space: nowrap; }
+.heads span:last-child { text-align: right; }
+.row { display: grid; grid-template-columns: 130px 110px 1fr 200px; column-gap: 24px; align-items: center; padding: 0 64px; height: 86px; border-bottom: 1px solid #d4d4d4; }
+.pos { font: 900 64px/.84 "Big Shoulders Display", sans-serif; }
+.on { font: 800 34px/1 "Big Shoulders Display", sans-serif; }
+.on small { font: 700 15px Archivo, sans-serif; margin-left: 5px; color: #595959; }
+.stamp { display: inline-block; background: #ff3d8b; color: #fff; font-weight: 800; font-size: 15px; letter-spacing: .09em; text-transform: uppercase; padding: 5px 10px 4px; transform: rotate(-4deg); }
+.bars { display: grid; gap: 9px; }
+.bar { height: 16px; background: #111; }
+.bar.sub { height: 9px; background: #d4d4d4; }
+.gain { text-align: right; font: 800 40px/.9 "Big Shoulders Display", sans-serif; }
+</style>
+</head>
+<body>
+<header class="mast">
+	<h1>Trending Repos</h1>
+	<p class="tag"><span>GitHub trending, with memory</span><span>Charted every four hours</span></p>
+</header>
+<div class="heads"><span>This chart</span><span>Days on</span><span>Repository</span><span>Stars today</span></div>
+<div class="row one">
+	<span class="pos">1</span>
+	<span class="on">9<small>days</small></span>
+	<span class="bars"><span class="bar" style="width:46%"></span><span class="bar sub" style="width:78%"></span></span>
+	<span class="gain">+2,184</span>
+</div>
+<div class="row">
+	<span class="pos">2</span>
+	<span class="on"><span class="stamp">New</span></span>
+	<span class="bars"><span class="bar" style="width:34%"></span><span class="bar sub" style="width:64%"></span></span>
+	<span class="gain">+1,377</span>
+</div>
+<div class="row">
+	<span class="pos">3</span>
+	<span class="on">4<small>days</small></span>
+	<span class="bars"><span class="bar" style="width:52%"></span><span class="bar sub" style="width:70%"></span></span>
+	<span class="gain">+968</span>
+</div>
+</body>
+</html>

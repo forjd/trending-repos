@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit",
     "db:migrate:local": "wrangler d1 migrations apply trending-repos --local",
     "db:migrate": "wrangler d1 migrations apply trending-repos --remote",
-    "test": "vitest run"
+    "test": "vitest run",
+    "og": "google-chrome --headless=new --disable-gpu --hide-scrollbars --allow-file-access-from-files --window-size=1200,630 --screenshot=public/og.png \"file://$PWD/scripts/og-image.html\""
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "^1.4.11",
