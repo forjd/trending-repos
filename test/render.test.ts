@@ -157,8 +157,21 @@ describe("link previews", () => {
 		expect(html).toContain(`<meta property="og:url" content="${SITE_URL}/">`);
 		expect(html).toContain(`<meta property="og:image" content="${SITE_URL}/og.png">`);
 		expect(html).toContain(`<meta name="twitter:card" content="summary_large_image">`);
-		expect(html).toMatch(/<meta property="og:title" content="[^"]+">/);
-		expect(html).toMatch(/<meta property="og:description" content="[^"]+">/);
+	});
+
+	it("repeats the page title and description, and describes the image", () => {
+		const html = renderPage(null);
+		const title = html.match(/<title>([^<]+)<\/title>/)?.[1];
+		const description = html.match(/<meta name="description" content="([^"]+)">/)?.[1];
+		expect(title).toBeTruthy();
+		expect(description).toBeTruthy();
+		expect(html).toContain(`<meta property="og:title" content="${title}">`);
+		expect(html).toContain(`<meta property="og:description" content="${description}">`);
+		// public/og.png is 1200x630; regenerate it with npm run og
+		expect(html).toContain(`<meta property="og:image:type" content="image/png">`);
+		expect(html).toContain(`<meta property="og:image:width" content="1200">`);
+		expect(html).toContain(`<meta property="og:image:height" content="630">`);
+		expect(html).toMatch(/<meta property="og:image:alt" content="[^"]+">/);
 	});
 });
 

@@ -59,7 +59,7 @@ If D1 fails, the scrape is still published without badges. `/__refresh` then ret
 | `npm run types` | Regenerate `worker-configuration.d.ts`. Secret names come from `.dev.vars`, so it must list `GITHUB_TOKEN`, `HEALTHCHECK_URL` and `REFRESH_KEY` (empty values are fine) |
 | `npm run db:migrate:local` | Apply migrations to the local D1 |
 | `npm run db:migrate` | Apply migrations to production D1 |
-| `npm run og` | Regenerate `public/og.png` from `scripts/og-image.html` with headless Chrome |
+| `npm run og` | Regenerate `public/og.png` from `scripts/og-image.html`. Needs `google-chrome` on `PATH`, as on the VM |
 | `npm run deploy` | Apply pending D1 migrations to production, then deploy to Cloudflare |
 
 Query production history: `npx wrangler d1 execute trending-repos --remote --command "SELECT ..."`
