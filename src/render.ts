@@ -231,17 +231,21 @@ ${fontFace("Archivo", "archivo-v25-latin-ext.woff2", "400 800", LATIN_EXT)}
 	--one-fg: #fff;
 	--one-muted: #b8b8b8;
 	--one-gain: #ffde17;
+	--pos: var(--ink);
 	--display: "Big Shoulders Display", "Arial Narrow", sans-serif;
 	--text: "Archivo", system-ui, sans-serif;
 	color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
 	:root {
-		--sheet: #121212;
-		--ink: #f0f0f0;
-		--muted: #a6a6a6;
-		--rule: #333;
-		--hover: #1f1d12;
+		/* A warm off-white on a lifted sheet: pure white on black glares and blurs */
+		--sheet: #161513;
+		--ink: #e8e4da;
+		--muted: #aaa69c;
+		--rule: #42403b;
+		--hover: #24210f;
+		/* Positions step back so the repo name and the gain lead the row */
+		--pos: #b3afa5;
 		--one-bg: #ffde17;
 		--one-fg: #111;
 		--one-muted: #4a4220;
@@ -258,6 +262,12 @@ body {
 	font: 400 15px/1.45 var(--text);
 	font-variant-numeric: tabular-nums;
 	-webkit-font-smoothing: antialiased;
+}
+/* Light strokes on a dark sheet read thinner, so text gets a little more weight
+   and keeps macOS's default rendering. The display face stays crisp */
+@media (prefers-color-scheme: dark) {
+	body { font-weight: 450; -webkit-font-smoothing: auto; }
+	h1, .when-time, .pos, .on-n, .gain-n, .empty-title { -webkit-font-smoothing: antialiased; }
 }
 ::selection { background: var(--yellow); color: var(--black); }
 p { margin: 0; }
@@ -329,7 +339,7 @@ main { max-width: 1520px; margin: 0 auto; padding: 8px 40px 0; }
 	padding: 14px 0 7px;
 	border-bottom: 3px solid var(--ink);
 	font-weight: 800;
-	font-size: 10.5px;
+	font-size: 11.5px;
 	line-height: 1.25;
 	letter-spacing: .09em;
 	text-transform: uppercase;
@@ -340,12 +350,12 @@ main { max-width: 1520px; margin: 0 auto; padding: 8px 40px 0; }
 .row { position: relative; padding: 12px 0; border-bottom: 1px solid var(--rule); align-items: start; }
 .row:hover { background: var(--hover); }
 .row:hover .name { text-decoration: underline; }
-.pos { font: 900 46px/.84 var(--display); }
+.pos { font: 900 46px/.84 var(--display); color: var(--pos); }
 .on { text-align: right; padding-top: 3px; }
 .on-n { display: block; font: 800 22px/1 var(--display); }
 /* A long run gets a heavier numeral and a rule under it, still well below position scale */
 .on-n.long { font-size: 26px; font-weight: 900; padding-bottom: 2px; border-bottom: 3px solid currentColor; display: inline-block; }
-.on-l, .none { display: block; font-size: 11px; color: var(--muted); }
+.on-l, .none { display: block; font-size: 12px; color: var(--muted); }
 .none { font-size: 15px; }
 .body { min-width: 0; }
 .name {
@@ -383,14 +393,14 @@ main { max-width: 1520px; margin: 0 auto; padding: 8px 40px 0; }
 	line-clamp: 2;
 	overflow: hidden;
 }
-.topics { margin-top: 3px; font-size: 12px; color: var(--muted); }
+.topics { margin-top: 3px; font-size: 13px; color: var(--muted); }
 .gain { text-align: right; padding-top: 1px; }
 .gain-n { display: block; font: 800 28px/.9 var(--display); }
-.gain-l { display: block; margin-top: 4px; font-size: 11px; color: var(--muted); }
+.gain-l { display: block; margin-top: 4px; font-size: 12px; color: var(--muted); }
 
 /* No. 1 prints reversed */
 .row.one { background: var(--one-bg); color: var(--one-fg); padding: 16px 14px; margin: 0 -14px; border-bottom: 0; }
-.one .pos { font-size: 76px; }
+.one .pos { font-size: 76px; color: inherit; }
 .one .name { font-size: 23px; }
 .one .by, .one .on-l, .one .gain-l, .one .topics { color: var(--one-muted); }
 .one .gain-n { font-size: 40px; color: var(--one-gain); }
