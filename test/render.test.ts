@@ -209,6 +209,17 @@ describe("link previews", () => {
 	});
 });
 
+describe("footer", () => {
+	it("links to the JSON, the source and the author's blog", () => {
+		for (const html of [renderPage(null), page(repo())]) {
+			const footer = html.match(/<footer>[\s\S]*<\/footer>/)?.[0] ?? "";
+			expect(footer).toContain(`<a href="/api/trending">JSON</a>`);
+			expect(footer).toContain(`<a href="https://github.com/forjd/trending-repos">Source</a>`);
+			expect(footer).toContain(`<a href="https://ddewhurst.com" rel="author">ddewhurst.com</a>`);
+		}
+	});
+});
+
 describe("empty and partial states", () => {
 	it("shows the empty message and no key or time without a snapshot", () => {
 		const html = renderPage(null);
