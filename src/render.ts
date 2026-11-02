@@ -112,7 +112,7 @@ ${
 </main>
 <footer>
 	<p>Data from <a href="https://github.com/trending">github.com/trending</a> and the GitHub API. Not affiliated with GitHub.</p>
-	<p class="foot-links"><a href="/api/trending">JSON</a><a href="https://github.com/forjd/trending-repos">Source</a></p>
+	<p class="foot-links"><a href="/api/trending">JSON</a><a href="https://github.com/forjd/trending-repos">Source</a><a href="https://ddewhurst.com" rel="author">ddewhurst.com</a></p>
 </footer>
 </body>
 </html>`;

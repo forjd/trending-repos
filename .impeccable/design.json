@@ -109,7 +109,7 @@
       "kind": "nav",
       "refersTo": "footer",
       "description": "Data credit and bold ink links over a 3px ink rule.",
-      "html": "<footer class=\"ds-foot\"><p>Data from <a href=\"#\">github.com/trending</a> and the GitHub API. Not affiliated with GitHub.</p><p class=\"ds-foot-links\"><a href=\"#\">JSON</a><a href=\"#\">Source</a></p></footer>",
+      "html": "<footer class=\"ds-foot\"><p>Data from <a href=\"#\">github.com/trending</a> and the GitHub API. Not affiliated with GitHub.</p><p class=\"ds-foot-links\"><a href=\"#\">JSON</a><a href=\"#\">Source</a><a href=\"#\">ddewhurst.com</a></p></footer>",
       "css": ".ds-foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px; padding: 18px 40px 40px; border-top: 3px solid #111; font: 400 13px/1.45 'Archivo', system-ui, sans-serif; color: #595959; } .ds-foot p { margin: 0; } .ds-foot a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; } .ds-foot a:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; } .ds-foot-links { display: flex; gap: 20px; font-weight: 800; color: #111; }"
     }
   ],
