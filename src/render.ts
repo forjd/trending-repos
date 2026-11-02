@@ -268,6 +268,9 @@ body {
 @media (prefers-color-scheme: dark) {
 	body { font-weight: 450; -webkit-font-smoothing: auto; }
 	h1, .when-time, .pos, .on-n, .gain-n, .empty-title { -webkit-font-smoothing: antialiased; }
+	/* Dark type on a light ground prints as it does in light mode */
+	.mast, .row.one { font-weight: 400; }
+	.mast, .row.one, .stale, .stamp { -webkit-font-smoothing: antialiased; }
 }
 ::selection { background: var(--yellow); color: var(--black); }
 p { margin: 0; }
@@ -477,6 +480,8 @@ footer {
 	.when-time { font-size: 44px; margin: 2px 0 0; }
 	.key { gap: 6px 20px; }
 	.heads, .row { grid-template-columns: 40px minmax(0, 1fr) auto; column-gap: 12px; }
+	/* Keeps "This chart" inside its 40px column */
+	.heads { letter-spacing: .04em; }
 	.row { grid-template-rows: auto 1fr; }
 	.heads span:nth-child(2) { display: none; }
 	.heads span:nth-child(3) { grid-column: 2; }

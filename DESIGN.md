@@ -67,6 +67,12 @@ typography:
     fontWeight: 800
     lineHeight: 1.25
     letterSpacing: "0.09em"
+  stamp:
+    fontFamily: "Archivo, system-ui, sans-serif"
+    fontSize: "10.5px"
+    fontWeight: 800
+    lineHeight: 1
+    letterSpacing: "0.1em"
 rounded:
   none: "0px"
 spacing:
@@ -112,7 +118,7 @@ components:
   stamp-new:
     backgroundColor: "{colors.stamp-pink}"
     textColor: "{colors.ink}"
-    typography: "{typography.label}"
+    typography: "{typography.stamp}"
     rounded: "{rounded.none}"
     padding: "4px 6px 3px"
 ---
@@ -160,7 +166,7 @@ A two-colour trade-paper palette (yellow and ink) with one spot colour, on a whi
 ### Dark Sheet Legibility
 The dark sheet is newsprint at night, not white on black. Pure white on near-black glares, and thin light strokes blur, so:
 - Ink is a warm off-white (`#e8e4da`, 14:1 on the sheet) on a lifted warm sheet (`#161513`). Do not push ink back to white or the sheet to black.
-- Text set in Archivo prints at weight 450 instead of 400, and uses the platform's default font smoothing. Display numerals keep `antialiased`, so the heavy figures stay crisp.
+- Text set in Archivo on the dark sheet prints at weight 450 instead of 400, and uses the platform's default font smoothing. Display numerals keep `antialiased`, so the heavy figures stay crisp. Dark type on light grounds (the masthead, the No. 1 row, the stale strip, NEW stamps) keeps the light-mode weight and smoothing.
 - Position numerals step down to `position-dark`: a column of large, full-white 900-weight figures pulls the eye off the repository names. Gains stay full Ink, because they lead the row with the name.
 
 ### Named Rules
@@ -173,9 +179,9 @@ The dark sheet is newsprint at night, not white on black. Pure white on near-bla
 Both faces are self-hosted in `public/fonts` as variable woff2 files (Big Shoulders Display, latin; Archivo, latin and latin-ext), with their SIL OFL licences beside them. The CSP allows fonts from the site only.
 
 **Display Font:** Big Shoulders Display 800/900 (with Arial Narrow, sans-serif)
-**Body Font:** Archivo 400/600/800 (with system-ui, sans-serif)
+**Body Font:** Archivo 400/450/600/800 (with system-ui, sans-serif). 450 is the text weight on the dark sheet
 
-**Character:** A tall condensed poster face for every figure the eye scans, against a sturdy grotesque that stays readable at 11 to 17px. The contrast between the two sizes is the hierarchy.
+**Character:** A tall condensed poster face for every figure the eye scans, against a sturdy grotesque that stays readable at 11.5 to 17px. The contrast between the two sizes is the hierarchy.
 
 ### Hierarchy
 - **Display** (900, clamp(64px, 8.4vw, 124px), 0.78, uppercase): the "Trending Repos" title in the masthead only. Phones: clamp(52px, 17vw, 72px).
