@@ -149,7 +149,7 @@ There is no client script. Motion is one gesture: the NEW stamp presses onto the
 A two-colour trade-paper palette (yellow and ink) with one spot colour, on a white or near-black sheet.
 
 ### Primary
-- **Chart Yellow** (`chart-yellow`): the masthead band, the text-selection highlight, the `theme-color` and favicon, and the No. 1 gain figure on the light sheet. In dark mode it becomes the No. 1 row's background.
+- **Chart Yellow** (`chart-yellow`): the masthead band, the text-selection highlight, the light `theme-color`, the favicon, and the No. 1 gain figure, all on the light sheet. The dark sheet uses Night Chart Yellow instead.
 - **Night Chart Yellow** (`chart-yellow-dark`): Chart Yellow under `prefers-color-scheme: dark`, for the masthead, the No. 1 row, the selection highlight and the dark `theme-color`. The favicon keeps Chart Yellow.
 
 ### Secondary
@@ -261,7 +261,7 @@ When the snapshot is more than 12 hours old (three missed runs), a full-width st
 - **Degrades quietly:** missing language, homepage, description or topics remove their element; nothing shows a placeholder.
 
 ### No. 1 Row
-Prints reversed. Light mode: ink background, white text, gain in chart yellow. Dark mode: inverts to a chart-yellow row with ink text and ink gain. Larger position (76px), name (23px) and gain (40px). Its focus outline uses the gain colour, inset 4px.
+Prints reversed. Light mode: ink background, white text, gain in chart yellow. Dark mode: inverts to a Night Chart Yellow (`chart-yellow-dark`) row with ink text and ink gain. Larger position (76px), name (23px) and gain (40px). Its focus outline uses the gain colour, inset 4px.
 
 ### Days On Cell
 - **Count:** display numeral over a small "day"/"days" label (screen readers hear "6 days trending").

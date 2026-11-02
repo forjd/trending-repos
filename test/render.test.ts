@@ -21,6 +21,20 @@ const repo = (fields: Partial<Repo> = {}): Repo => ({
 const page = (...repos: Repo[]) => renderPage({ fetchedAt: FETCHED_AT, repos });
 const count = (html: string, needle: string) => html.split(needle).length - 1;
 
+// WCAG contrast ratio between two #rgb or #rrggbb colours
+const contrast = (a: string, b: string) => {
+	const luminance = (color: string) => {
+		const hex = color.length === 4 ? color.replace(/[0-9a-f]/g, "$&$&") : color;
+		const [r, g, bl] = [1, 3, 5].map((i) => {
+			const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+			return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+		});
+		return 0.2126 * r + 0.7152 * g + 0.0722 * bl;
+	};
+	const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+	return (hi + 0.05) / (lo + 0.05);
+};
+
 describe("renderPage", () => {
 	it("escapes repo text and drops unsafe homepages", () => {
 		const html = page(repo({ description: `<script>alert(1)</script>`, homepage: "javascript:alert(1)", topics: [`"><img>`] }));
@@ -156,6 +170,16 @@ describe("freshness and fonts", () => {
 		expect(yellows[1]).not.toBe(yellows[0]);
 		expect(html).toContain(`<meta name="theme-color" content="${yellows[0]}" media="(prefers-color-scheme: light)">`);
 		expect(html).toContain(`<meta name="theme-color" content="${yellows[1]}" media="(prefers-color-scheme: dark)">`);
+	});
+
+	it("keeps No. 1's text at 7:1 or more on the dark yellow", () => {
+		const html = renderPage(null);
+		const dark = html.match(/prefers-color-scheme: dark\) \{\s*:root \{([^}]+)\}/)?.[1] ?? "";
+		const token = (name: string) => dark.match(new RegExp(`--${name}: (#[0-9a-f]{3}(?:[0-9a-f]{3})?);`))?.[1] ?? "";
+		const yellow = token("yellow");
+		expect(dark).toContain("--one-bg: var(--yellow);");
+		expect(contrast(yellow, token("one-fg"))).toBeGreaterThanOrEqual(7);
+		expect(contrast(yellow, token("one-muted"))).toBeGreaterThanOrEqual(7);
 	});
 });
 
