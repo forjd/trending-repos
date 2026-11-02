@@ -10,11 +10,12 @@ colors:
   rule: "#d4d4d4"
   hover-wash: "#fff8cc"
   one-muted: "#b8b8b8"
-  sheet-dark: "#121212"
-  ink-dark: "#f0f0f0"
-  muted-dark: "#a6a6a6"
-  rule-dark: "#333"
-  hover-wash-dark: "#1f1d12"
+  sheet-dark: "#161513"
+  ink-dark: "#e8e4da"
+  muted-dark: "#aaa69c"
+  rule-dark: "#42403b"
+  hover-wash-dark: "#24210f"
+  position-dark: "#b3afa5"
   one-muted-dark: "#4a4220"
 typography:
   display:
@@ -62,10 +63,16 @@ typography:
     lineHeight: 1.45
   label:
     fontFamily: "Archivo, system-ui, sans-serif"
-    fontSize: "10.5px"
+    fontSize: "11.5px"
     fontWeight: 800
     lineHeight: 1.25
     letterSpacing: "0.09em"
+  stamp:
+    fontFamily: "Archivo, system-ui, sans-serif"
+    fontSize: "10.5px"
+    fontWeight: 800
+    lineHeight: 1
+    letterSpacing: "0.1em"
 rounded:
   none: "0px"
 spacing:
@@ -111,7 +118,7 @@ components:
   stamp-new:
     backgroundColor: "{colors.stamp-pink}"
     textColor: "{colors.ink}"
-    typography: "{typography.label}"
+    typography: "{typography.stamp}"
     rounded: "{rounded.none}"
     padding: "4px 6px 3px"
 ---
@@ -154,6 +161,13 @@ A two-colour trade-paper palette (yellow and ink) with one spot colour, on a whi
 - **Yellow Wash** (`hover-wash`): row hover background.
 - **No. 1 Grey** (`one-muted`): secondary text inside the reversed No. 1 row.
 - **Dark sheet set** (`sheet-dark`, `ink-dark`, `muted-dark`, `rule-dark`, `hover-wash-dark`, `one-muted-dark`): the same roles under `prefers-color-scheme: dark`. In dark mode the No. 1 row uses Chart Yellow as background with Ink text and Ink gain, and `one-muted-dark` for its secondary text.
+- **Night Position Grey** (`position-dark`): the position numerals on the dark sheet (except No. 1). In light mode positions print in Ink.
+
+### Dark Sheet Legibility
+The dark sheet is newsprint at night, not white on black. Pure white on near-black glares, and thin light strokes blur, so:
+- Ink is a warm off-white (`#e8e4da`, 14:1 on the sheet) on a lifted warm sheet (`#161513`). Do not push ink back to white or the sheet to black.
+- Text set in Archivo on the dark sheet prints at weight 450 instead of 400, and uses the platform's default font smoothing. Display numerals keep `antialiased`, so the heavy figures stay crisp. Dark type on light grounds (the masthead, the No. 1 row, the stale strip, NEW stamps) keeps the light-mode weight and smoothing.
+- Position numerals step down to `position-dark`: a column of large, full-white 900-weight figures pulls the eye off the repository names. Gains stay full Ink, because they lead the row with the name.
 
 ### Named Rules
 **The Spot Colour Rule.** Pink means NEW and nothing else. If an element does not mean "first seen on trending today", it is not pink.
@@ -165,9 +179,9 @@ A two-colour trade-paper palette (yellow and ink) with one spot colour, on a whi
 Both faces are self-hosted in `public/fonts` as variable woff2 files (Big Shoulders Display, latin; Archivo, latin and latin-ext), with their SIL OFL licences beside them. The CSP allows fonts from the site only.
 
 **Display Font:** Big Shoulders Display 800/900 (with Arial Narrow, sans-serif)
-**Body Font:** Archivo 400/600/800 (with system-ui, sans-serif)
+**Body Font:** Archivo 400/450/600/800 (with system-ui, sans-serif). 450 is the text weight on the dark sheet
 
-**Character:** A tall condensed poster face for every figure the eye scans, against a sturdy grotesque that stays readable at 11 to 17px. The contrast between the two sizes is the hierarchy.
+**Character:** A tall condensed poster face for every figure the eye scans, against a sturdy grotesque that stays readable at 11.5 to 17px. The contrast between the two sizes is the hierarchy.
 
 ### Hierarchy
 - **Display** (900, clamp(64px, 8.4vw, 124px), 0.78, uppercase): the "Trending Repos" title in the masthead only. Phones: clamp(52px, 17vw, 72px).
@@ -177,8 +191,8 @@ Both faces are self-hosted in `public/fonts` as variable woff2 files (Big Should
 - **Days numeral** (800, 22px, 1): the "Days on" count; 20px on phones.
 - **Title** (800, 17px, 1.2): repository name. No. 1 at 23px (20px on phones).
 - **Body** (400, 15px, 1.45): base text; descriptions at 14px, max 68ch.
-- **Small** (400, 13px): owner meta line, chart key, footer, masthead "updated" line (600). Topics at 12px; "days" and "stars today" labels at 11px.
-- **Label** (800, 10.5px, 0.09em tracking, uppercase): column heads. The NEW stamp uses the same size at 0.1em; the masthead strapline (14px, 0.06em) and dateline (12px, 0.08em) are its larger kin.
+- **Small** (400, 13px): owner meta line, chart key, footer, masthead "updated" line (600). Topics at 13px; "days" and "stars today" labels at 12px. Nothing the reader must read prints below 11.5px.
+- **Label** (800, 11.5px, 0.09em tracking, uppercase): column heads. The NEW stamp is a printed mark, not running text, and stays at 10.5px with 0.1em tracking; the masthead strapline (14px, 0.06em) and dateline (12px, 0.08em) are its larger kin.
 
 ### Named Rules
 **The Numerals Are Display Rule.** Every number the reader ranks by (position, days on, stars today, chart time) sets in Big Shoulders Display. Counts inside running text (total stars, forks, the key's totals) stay in Archivo.
