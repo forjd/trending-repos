@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-01T19:40:00Z",
+  "generatedAt": "2026-11-02T21:00:00Z",
   "title": "Design System: Trending Repos",
   "extensions": {
     "colorMeta": {
@@ -12,12 +12,13 @@
       "rule": { "role": "neutral", "displayName": "Hairline", "canonical": "#d4d4d4", "cssVar": "--rule" },
       "hover-wash": { "role": "neutral", "displayName": "Yellow Wash", "canonical": "#fff8cc", "cssVar": "--hover" },
       "one-muted": { "role": "neutral", "displayName": "No. 1 Grey", "canonical": "#b8b8b8", "cssVar": "--one-muted" },
+      "chart-yellow-dark": { "role": "primary", "displayName": "Night Chart Yellow", "canonical": "#e7c537", "cssVar": "--yellow (dark)" },
       "sheet-dark": { "role": "neutral", "displayName": "Night Sheet", "canonical": "#161513", "cssVar": "--sheet (dark)" },
       "ink-dark": { "role": "neutral", "displayName": "Night Ink", "canonical": "#e8e4da", "cssVar": "--ink (dark)" },
       "muted-dark": { "role": "neutral", "displayName": "Night Press Grey", "canonical": "#aaa69c", "cssVar": "--muted (dark)" },
       "rule-dark": { "role": "neutral", "displayName": "Night Hairline", "canonical": "#42403b", "cssVar": "--rule (dark)" },
       "hover-wash-dark": { "role": "neutral", "displayName": "Night Yellow Wash", "canonical": "#24210f", "cssVar": "--hover (dark)" },
-      "one-muted-dark": { "role": "neutral", "displayName": "No. 1 Olive", "canonical": "#4a4220", "cssVar": "--one-muted (dark)" },
+      "one-muted-dark": { "role": "neutral", "displayName": "No. 1 Olive", "canonical": "#3d3616", "cssVar": "--one-muted (dark)" },
       "position-dark": { "role": "neutral", "displayName": "Night Position Grey", "canonical": "#b3afa5", "cssVar": "--pos (dark)" }
     },
     "typographyMeta": {
@@ -77,7 +78,7 @@
       "refersTo": "chart-row-one",
       "description": "Position 1 prints reversed: ink with a yellow gain on the light sheet; yellow with an ink gain on the dark sheet.",
       "html": "<div class=\"ds-one\"><span class=\"ds-one-pos\">1</span><span class=\"ds-one-on\"><b>6</b><small>days</small></span><div><a class=\"ds-one-name\" href=\"#\">claude-mem</a><p class=\"ds-one-by\">thedotmack · TypeScript · 108.8k stars</p></div><span class=\"ds-one-gain\">+1,527</span></div>",
-      "css": ".ds-one { display: grid; grid-template-columns: 56px 52px minmax(0, 1fr) 104px; column-gap: 14px; align-items: start; padding: 16px 14px; background: #111; color: #fff; font: 400 15px/1.45 'Archivo', system-ui, sans-serif; } .ds-one p { margin: 0; } .ds-one-pos { font: 900 76px/.84 'Big Shoulders Display', 'Arial Narrow', sans-serif; } .ds-one-on { text-align: right; padding-top: 3px; } .ds-one-on b { display: block; font: 800 22px/1 'Big Shoulders Display', 'Arial Narrow', sans-serif; } .ds-one-on small { display: block; font-size: 12px; color: #b8b8b8; } .ds-one-name { color: inherit; font-weight: 800; font-size: 23px; line-height: 1.2; text-decoration: none; } .ds-one-name:hover { text-decoration: underline; } .ds-one-name:focus-visible { outline: 2px solid #ffde17; outline-offset: 2px; } .ds-one-by { font-size: 13px; color: #b8b8b8; } .ds-one-gain { text-align: right; font: 800 40px/.9 'Big Shoulders Display', 'Arial Narrow', sans-serif; color: #ffde17; } @media (prefers-color-scheme: dark) { .ds-one { background: #ffde17; color: #111; } .ds-one-on small, .ds-one-by { color: #4a4220; } .ds-one-gain { color: #111; } .ds-one-name:focus-visible { outline-color: #111; } }"
+      "css": ".ds-one { display: grid; grid-template-columns: 56px 52px minmax(0, 1fr) 104px; column-gap: 14px; align-items: start; padding: 16px 14px; background: #111; color: #fff; font: 400 15px/1.45 'Archivo', system-ui, sans-serif; } .ds-one p { margin: 0; } .ds-one-pos { font: 900 76px/.84 'Big Shoulders Display', 'Arial Narrow', sans-serif; } .ds-one-on { text-align: right; padding-top: 3px; } .ds-one-on b { display: block; font: 800 22px/1 'Big Shoulders Display', 'Arial Narrow', sans-serif; } .ds-one-on small { display: block; font-size: 12px; color: #b8b8b8; } .ds-one-name { color: inherit; font-weight: 800; font-size: 23px; line-height: 1.2; text-decoration: none; } .ds-one-name:hover { text-decoration: underline; } .ds-one-name:focus-visible { outline: 2px solid #ffde17; outline-offset: 2px; } .ds-one-by { font-size: 13px; color: #b8b8b8; } .ds-one-gain { text-align: right; font: 800 40px/.9 'Big Shoulders Display', 'Arial Narrow', sans-serif; color: #ffde17; } @media (prefers-color-scheme: dark) { .ds-one { background: #e7c537; color: #111; } .ds-one-on small, .ds-one-by { color: #3d3616; } .ds-one-gain { color: #111; } .ds-one-name:focus-visible { outline-color: #111; } }"
     },
     {
       "name": "NEW Stamp",

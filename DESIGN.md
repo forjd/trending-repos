@@ -11,12 +11,13 @@ colors:
   hover-wash: "#fff8cc"
   one-muted: "#b8b8b8"
   sheet-dark: "#161513"
+  chart-yellow-dark: "#e7c537"
   ink-dark: "#e8e4da"
   muted-dark: "#aaa69c"
   rule-dark: "#42403b"
   hover-wash-dark: "#24210f"
   position-dark: "#b3afa5"
-  one-muted-dark: "#4a4220"
+  one-muted-dark: "#3d3616"
 typography:
   display:
     fontFamily: "Big Shoulders Display, Arial Narrow, sans-serif"
@@ -113,7 +114,7 @@ components:
     rounded: "{rounded.none}"
     padding: "16px 14px"
   chart-row-one-dark:
-    backgroundColor: "{colors.chart-yellow}"
+    backgroundColor: "{colors.chart-yellow-dark}"
     textColor: "{colors.ink}"
   stamp-new:
     backgroundColor: "{colors.stamp-pink}"
@@ -148,7 +149,8 @@ There is no client script. Motion is one gesture: the NEW stamp presses onto the
 A two-colour trade-paper palette (yellow and ink) with one spot colour, on a white or near-black sheet.
 
 ### Primary
-- **Chart Yellow** (`chart-yellow`): the masthead band, the text-selection highlight, the `theme-color` and favicon, and the No. 1 gain figure on the light sheet. In dark mode it becomes the No. 1 row's background.
+- **Chart Yellow** (`chart-yellow`): the masthead band, the text-selection highlight, the light `theme-color`, the favicon, and the No. 1 gain figure, all on the light sheet. The dark sheet uses Night Chart Yellow instead.
+- **Night Chart Yellow** (`chart-yellow-dark`): Chart Yellow under `prefers-color-scheme: dark`, for the masthead, the No. 1 row, the selection highlight and the dark `theme-color`. The favicon keeps Chart Yellow.
 
 ### Secondary
 - **Stamp Pink** (`stamp-pink`): NEW stamps only, in the "Days on" column and once in the chart key as the legend sample. Text on it is ink.
@@ -160,13 +162,14 @@ A two-colour trade-paper palette (yellow and ink) with one spot colour, on a whi
 - **Hairline** (`rule`): 1px row rules and the key strip's bottom rule; the avatar placeholder.
 - **Yellow Wash** (`hover-wash`): row hover background.
 - **No. 1 Grey** (`one-muted`): secondary text inside the reversed No. 1 row.
-- **Dark sheet set** (`sheet-dark`, `ink-dark`, `muted-dark`, `rule-dark`, `hover-wash-dark`, `one-muted-dark`): the same roles under `prefers-color-scheme: dark`. In dark mode the No. 1 row uses Chart Yellow as background with Ink text and Ink gain, and `one-muted-dark` for its secondary text.
+- **Dark sheet set** (`sheet-dark`, `ink-dark`, `muted-dark`, `rule-dark`, `hover-wash-dark`, `one-muted-dark`): the same roles under `prefers-color-scheme: dark`. In dark mode the No. 1 row uses Night Chart Yellow as background with Ink text and Ink gain, and `one-muted-dark` for its secondary text.
 - **Night Position Grey** (`position-dark`): the position numerals on the dark sheet (except No. 1). In light mode positions print in Ink.
 
 ### Dark Sheet Legibility
 The dark sheet is newsprint at night, not white on black. Pure white on near-black glares, and thin light strokes blur, so:
 - Ink is a warm off-white (`#e8e4da`, 14:1 on the sheet) on a lifted warm sheet (`#161513`). Do not push ink back to white or the sheet to black.
 - Text set in Archivo on the dark sheet prints at weight 450 instead of 400, and uses the platform's default font smoothing. Display numerals keep `antialiased`, so the heavy figures stay crisp. Dark type on light grounds (the masthead, the No. 1 row, the stale strip, NEW stamps) keeps the light-mode weight and smoothing.
+- Yellow steps down to `chart-yellow-dark` (`#e7c537`, OKLCH 0.83 / 0.155, against 0.90 / 0.18 for Chart Yellow). Full-strength yellow blocks on the near-black sheet are the brightest thing on the page by far, and they glare. Ink on it stays above 11:1, and `one-muted-dark` stays above 7:1. Do not push the dark yellow back to `#ffde17`.
 - Position numerals step down to `position-dark`: a column of large, full-white 900-weight figures pulls the eye off the repository names. Gains stay full Ink, because they lead the row with the name.
 
 ### Named Rules
@@ -258,7 +261,7 @@ When the snapshot is more than 12 hours old (three missed runs), a full-width st
 - **Degrades quietly:** missing language, homepage, description or topics remove their element; nothing shows a placeholder.
 
 ### No. 1 Row
-Prints reversed. Light mode: ink background, white text, gain in chart yellow. Dark mode: inverts to a chart-yellow row with ink text and ink gain. Larger position (76px), name (23px) and gain (40px). Its focus outline uses the gain colour, inset 4px.
+Prints reversed. Light mode: ink background, white text, gain in chart yellow. Dark mode: inverts to a Night Chart Yellow (`chart-yellow-dark`) row with ink text and ink gain. Larger position (76px), name (23px) and gain (40px). Its focus outline uses the gain colour, inset 4px.
 
 ### Days On Cell
 - **Count:** display numeral over a small "day"/"days" label (screen readers hear "6 days trending").
