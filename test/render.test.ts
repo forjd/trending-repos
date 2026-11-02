@@ -147,6 +147,16 @@ describe("freshness and fonts", () => {
 		expect(html).toContain("url(/fonts/big-shoulders-display-v24-latin.woff2)");
 		expect(html).not.toMatch(/fonts\.(googleapis|gstatic)\.com/);
 	});
+
+	it("tints the browser chrome with each scheme's yellow", () => {
+		const html = renderPage(null);
+		const yellows = [...html.matchAll(/--yellow: (#[0-9a-f]{6});/g)].map((m) => m[1]);
+		// Light first, then the deeper yellow the dark sheet uses
+		expect(yellows).toHaveLength(2);
+		expect(yellows[1]).not.toBe(yellows[0]);
+		expect(html).toContain(`<meta name="theme-color" content="${yellows[0]}" media="(prefers-color-scheme: light)">`);
+		expect(html).toContain(`<meta name="theme-color" content="${yellows[1]}" media="(prefers-color-scheme: dark)">`);
+	});
 });
 
 describe("link previews", () => {

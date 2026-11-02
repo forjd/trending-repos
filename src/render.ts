@@ -70,7 +70,8 @@ export function renderPage(snapshot: Snapshot | null, now = new Date()): string 
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="${OG_IMAGE_ALT}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#ffde17">
+<meta name="theme-color" content="#ffde17" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#e7c537" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="data:image/svg+xml,${encodeURIComponent(FAVICON)}">
 <link rel="preload" href="/fonts/big-shoulders-display-v24-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/archivo-v25-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -240,15 +241,17 @@ ${fontFace("Archivo", "archivo-v25-latin-ext.woff2", "400 800", LATIN_EXT)}
 	:root {
 		/* A warm off-white on a lifted sheet: pure white on black glares and blurs */
 		--sheet: #161513;
+		/* Full-strength yellow glares as a big block on a dark sheet, so it prints a step deeper */
+		--yellow: #e7c537;
 		--ink: #e8e4da;
 		--muted: #aaa69c;
 		--rule: #42403b;
 		--hover: #24210f;
 		/* Positions step back so the repo name and the gain lead the row */
 		--pos: #b3afa5;
-		--one-bg: #ffde17;
+		--one-bg: var(--yellow);
 		--one-fg: #111;
-		--one-muted: #4a4220;
+		--one-muted: #3d3616;
 		--one-gain: #111;
 		color-scheme: dark;
 	}
