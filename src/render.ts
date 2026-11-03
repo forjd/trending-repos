@@ -112,7 +112,7 @@ ${
 </main>
 <footer>
 	<p>Data from <a href="https://github.com/trending">github.com/trending</a> and the GitHub API. Not affiliated with GitHub.</p>
-	<p class="foot-links"><a href="/api/trending">JSON</a><a href="https://github.com/forjd/trending-repos">Source</a><a href="https://ddewhurst.com" rel="author">ddewhurst.com</a></p>
+	<p class="foot-links"><a href="/api/trending">JSON</a><a href="https://github.com/forjd/trending-repos">Source</a><a href="https://models.ddewhurst.com/">Trending models</a><a href="https://ddewhurst.com" rel="author">ddewhurst.com</a></p>
 </footer>
 </body>
 </html>`;
@@ -448,7 +448,7 @@ footer {
 	font-size: 13px;
 	color: var(--muted);
 }
-.foot-links { display: flex; gap: 20px; font-weight: 800; color: var(--ink); }
+.foot-links { display: flex; flex-wrap: wrap; gap: 4px 20px; font-weight: 800; color: var(--ink); }
 
 /* Wide screens print both columns at chart density: one line each for meta and description */
 @media (min-width: 1101px) {
