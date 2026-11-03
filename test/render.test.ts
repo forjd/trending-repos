@@ -210,14 +210,23 @@ describe("link previews", () => {
 });
 
 describe("footer", () => {
-	it("links to the JSON, the source and the author's blog", () => {
+	it("links to the JSON, the source, the models chart and the author's blog", () => {
 		for (const html of [renderPage(null), page(repo())]) {
 			const footer = html.match(/<footer>[\s\S]*<\/footer>/)?.[0];
 			expect(footer, "page has no <footer>").toBeDefined();
-			expect(footer).toContain(`<a href="/api/trending">JSON</a>`);
-			expect(footer).toContain(`<a href="https://github.com/forjd/trending-repos">Source</a>`);
-			expect(footer).toContain(`<a href="https://ddewhurst.com" rel="author">ddewhurst.com</a>`);
+			expect(footer).toContain(
+				`<p class="foot-links">` +
+					`<a href="/api/trending">JSON</a>` +
+					`<a href="https://github.com/forjd/trending-repos">Source</a>` +
+					`<a href="https://models.ddewhurst.com/">Trending models</a>` +
+					`<a href="https://ddewhurst.com" rel="author">ddewhurst.com</a>` +
+					`</p>`,
+			);
 		}
+	});
+
+	it("wraps the links, so they fit on a 320px screen", () => {
+		expect(renderPage(null)).toMatch(/\.foot-links \{[^}]*flex-wrap: wrap/);
 	});
 });
 
