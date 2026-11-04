@@ -44,6 +44,13 @@ describe("renderPage", () => {
 		expect(html).not.toContain(`"><img>`);
 	});
 
+	it("escapes a long description in its title and in every cut", () => {
+		const hostile = `${"word ".repeat(40)}"><svg onload=alert(1)> <b>&`;
+		const html = page(repo({ description: hostile }));
+		expect(html).not.toContain("<svg onload");
+		expect(html).toContain(`title="${"word ".repeat(40)}&#34;&#62;&#60;svg onload=alert(1)&#62; &#60;b&#62;&#38;"`);
+	});
+
 	it("only puts a hex language colour into the inline style", () => {
 		expect(page(repo({ language: "TypeScript", languageColor: "#3178c6" }))).toContain(`style="background:#3178c6"`);
 		const bad = page(repo({ language: "TypeScript", languageColor: "red;background:url(x)" }));
@@ -62,7 +69,12 @@ describe("renderPage", () => {
 	it("drops homepages that only lead back to GitHub", () => {
 		expect(page(repo({ homepage: "https://github.github.com/spec-kit/" }))).not.toContain(`class="site"`);
 		expect(page(repo({ homepage: "https://github.com/o/r" }))).not.toContain(`class="site"`);
+		expect(page(repo({ homepage: "https://www.github.com/o/r" }))).not.toContain(`class="site"`);
+		expect(page(repo({ homepage: "https://GitHub.com/o/r" }))).not.toContain(`class="site"`);
+		expect(page(repo({ homepage: "https://gist.github.com/o/1" }))).not.toContain(`class="site"`);
+		// GitHub Pages sites are the project's own pages, so they stay
 		expect(page(repo({ homepage: "https://o.github.io/r" }))).toContain(`class="site"`);
+		expect(page(repo({ homepage: "https://notgithub.com" }))).toContain(`class="site"`);
 	});
 
 	it("shows at most three topics", () => {
@@ -103,16 +115,26 @@ describe("days on", () => {
 		const none = page(repo(), repo({ name: "s" }));
 		expect(count(none, "No history yet")).toBe(2);
 		expect(none).not.toContain(`class="stamp stamp-key"`);
-		expect(none).toContain(`class="key-days"`);
+		// No history at all (D1 failed), so there are no day counts to explain
+		expect(none).not.toContain(`class="key-days"`);
 
 		expect(page(repo({ daysTrending: 1 }))).not.toContain("first day on GitHub trending");
 		expect(page(repo({ isNew: true, daysTrending: 1 }))).toContain("first day on GitHub trending");
 	});
 
-	it("prints longer runs heavier, in three steps", () => {
-		expect(page(repo({ daysTrending: 3 }))).toContain(`<span class="on-n">3</span>`);
-		expect(page(repo({ daysTrending: 4 }))).toContain(`<span class="run"><span class="on-n mid">4</span>`);
-		expect(page(repo({ daysTrending: 7 }))).toContain(`<span class="on-n long">7</span>`);
+	it("boxes runs of 4 days or more, and prints runs of 7 or more larger", () => {
+		// The row's own cell, up to its screen-reader text, so the legend sample can't satisfy the check
+		const cell = (days: number) => page(repo({ daysTrending: days })).match(/<span class="on">([\s\S]*?)<\/span>\s*<div class="body">/)?.[1] ?? "";
+		expect(cell(3)).toContain(`<span class="plain"><span class="on-n">3</span>`);
+		expect(cell(4)).toContain(`<span class="run"><span class="on-n mid">4</span>`);
+		expect(cell(6)).toContain(`<span class="run"><span class="on-n mid">6</span>`);
+		expect(cell(7)).toContain(`<span class="run"><span class="on-n long">7</span>`);
+	});
+
+	it("shows a boxed legend sample that matches the rule it explains", () => {
+		const short = page(repo({ daysTrending: 2 }));
+		expect(short).toMatch(/class="key-days"[^>]*><span class="run"><span class="on-n mid">4<\/span>[\s\S]*?boxed from 4 days/);
+		expect(page(repo({ daysTrending: 9 }))).toMatch(/class="key-days"[^>]*><span class="run"><span class="on-n mid">9<\/span>/);
 	});
 });
 
@@ -138,7 +160,7 @@ describe("chart layout", () => {
 		expect(two).toContain(`aria-label="Positions 2 to 2"`);
 	});
 
-	it("reverses only the No. 1 row", () => {
+	it("marks only the No. 1 row", () => {
 		const html = page(...names(3));
 		expect(count(html, `class="row one"`)).toBe(1);
 		expect(html).toMatch(/class="row one">\s*<span class="pos">1<\/span>/);
@@ -174,6 +196,22 @@ describe("chart layout", () => {
 		const widths = [...html.matchAll(/<span style="width:(\d+)%"><\/span>/g)].map((m) => Number(m[1]));
 		// The smallest still shows a sliver
 		expect(widths).toEqual([100, 25, 8]);
+	});
+
+	it("draws no bar for no gain", () => {
+		const widths = (html: string) => [...html.matchAll(/<span style="width:(\d+)%"><\/span>/g)].map((m) => Number(m[1]));
+		expect(widths(page(repo({ name: "a", starsToday: 200 }), repo({ name: "b", starsToday: 0 })))).toEqual([100, 0]);
+		expect(widths(page(repo({ name: "a", starsToday: 0 }), repo({ name: "b", starsToday: 0 })))).toEqual([0, 0]);
+	});
+
+	it("tells screen readers which row has the top gain, and the order the chart is in", () => {
+		const stars = page(repo({ name: "a", starsToday: 50 }), repo({ name: "b", starsToday: 200 }));
+		expect(count(stars, ", the top gain")).toBe(1);
+		expect(stars).toMatch(/\+200<span class="sr-only"> stars today, the top gain<\/span>/);
+		expect(stars).toContain(`<span class="key-rank">Ranked by stars today.</span>`);
+		const github = githubOrder(repo({ name: "a", starsToday: 50 }), repo({ name: "b", starsToday: 200 }));
+		expect(github).toMatch(/\+200<span class="sr-only"> stars today, the top gain<\/span>/);
+		expect(github).toContain(`<span class="key-rank">Ranked in GitHub's own trending order, not by stars today.</span>`);
 	});
 
 	it("sums the key's totals and counts new repos", () => {
@@ -213,14 +251,14 @@ describe("freshness and fonts", () => {
 		const tokens = (css: string) => (name: string) => css.match(new RegExp(`--${name}: (#[0-9a-f]{3}(?:[0-9a-f]{3})?);`))?.[1] ?? "";
 		const light = tokens(html.match(/:root \{([^}]+)\}/)?.[1] ?? "");
 		const dark = tokens(html.match(/prefers-color-scheme: dark\) \{\s*:root \{([^}]+)\}/)?.[1] ?? "");
-		// The NEW tag and the masthead print black on yellow in both schemes
+		// The masthead prints black on yellow in both schemes
 		expect(contrast(light("yellow"), light("black"))).toBeGreaterThanOrEqual(7);
 		expect(contrast(dark("yellow"), light("black"))).toBeGreaterThanOrEqual(7);
+		// On the dark sheet the NEW tag is yellow text in a yellow outline
+		expect(contrast(dark("yellow"), dark("sheet"))).toBeGreaterThanOrEqual(7);
+		// Light --pos is var(--ink), so it falls back to ink
 		for (const t of [light, dark]) {
-			expect(contrast(t("sheet"), t("ink"))).toBeGreaterThanOrEqual(7);
-			expect(contrast(t("sheet"), t("muted"))).toBeGreaterThanOrEqual(7);
-			// Short runs of days print lighter, but still pass AA
-			expect(contrast(t("sheet"), t("faint"))).toBeGreaterThanOrEqual(4.5);
+			for (const fg of ["ink", "muted", "desc", "pos"]) expect(contrast(t("sheet"), t(fg) || t("ink"))).toBeGreaterThanOrEqual(7);
 		}
 	});
 });
@@ -316,6 +354,25 @@ describe("descriptions", () => {
 		expect(html).not.toContain("discord.gg");
 	});
 
+	it("takes a URL's brackets with it, leaves no dangling label, and keeps text that only contains a URL", () => {
+		const desc = (d: string) => page(repo({ description: d })).match(/<p class="desc">([^<]*)<\/p>/)?.[1];
+		expect(desc("Docs and demo (https://example.com) for the thing")).toBe("Docs and demo for the thing");
+		expect(desc("A tool. Official site: https://example.com")).toBe("A tool. Official site");
+		expect(desc("See https://a.b/c. Then more")).toBe("See. Then more");
+		// Glued to a word, so not a bare URL
+		expect(desc("Use it via git+https://x.y/z")).toBe("Use it via git+https://x.y/z");
+		// Nothing would be left, so the original text stays
+		expect(desc("https://example.com")).toBe("https://example.com");
+	});
+
+	it("strips leading emoji sequences and shortcodes, but not emoji inside the text", () => {
+		const desc = (d: string) => page(repo({ description: d })).match(/<p class="desc">([^<]*)<\/p>/)?.[1];
+		expect(desc(":rocket: :zap: Fast")).toBe("Fast");
+		expect(desc("👩🏽‍💻 Code")).toBe("Code");
+		expect(desc("Ships 🚀 fast")).toBe("Ships 🚀 fast");
+		expect(desc("🚀")).toBe("🚀");
+	});
+
 	it("prints a short cut for phones and a long one for wider screens, both at a word", () => {
 		const text = "word ".repeat(40).trim();
 		const html = page(repo({ description: text }));
@@ -323,9 +380,9 @@ describe("descriptions", () => {
 		expect(page(repo({ description: "Short." }))).toContain(`>Short.</p>`);
 	});
 
-	it("keeps the full text in the title when it cuts a description", () => {
+	it("keeps the whole cleaned description in the title when it cuts one", () => {
 		const text = "word ".repeat(40).trim();
-		expect(page(repo({ description: text }))).toContain(`<p class="desc" title="${text}">`);
+		expect(page(repo({ description: `🚀 ${text} https://example.com` }))).toContain(`<p class="desc" title="${text}">`);
 	});
 });
 
@@ -338,6 +395,21 @@ describe("clip", () => {
 
 	it("counts a CJK character as two and can cut between them", () => {
 		expect(clip("用AI构建新闻雷达", 6)).toBe("用AI构…");
+	});
+
+	it("keeps Korean words whole, because Korean spaces its words", () => {
+		expect(clip("한국어 설명입니다 길게", 12)).toBe("한국어…");
+	});
+
+	it("keeps text that fits exactly, and cuts one long word at the width", () => {
+		expect(clip("abcde", 5)).toBe("abcde");
+		expect(clip("abcdefghij", 5)).toBe("abcde…");
+	});
+
+	it("never splits an emoji in half", () => {
+		const cut = clip("abcd😀efgh", 5);
+		expect(cut).toBe("abcd😀…");
+		expect(cut).not.toMatch(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])/);
 	});
 });
 

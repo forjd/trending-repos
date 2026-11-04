@@ -1,4 +1,4 @@
-import { isStale, renderPage, timeAgo } from "./render";
+import { isStale, RENDER_VERSION, renderPage, timeAgo } from "./render";
 import { KEY, MIN_CRON_INTERVAL_MS, refresh } from "./refresh";
 import { pingHealthcheck } from "./health";
 import { authorized, etagMatches } from "./http";
@@ -10,7 +10,7 @@ import type { Snapshot } from "./types";
 const SECURITY_HEADERS = {
 	"content-security-policy":
 		"default-src 'none'; style-src 'unsafe-inline'; font-src 'self'; " +
-		"img-src https://avatars.githubusercontent.com https://github.com data:; frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
+		"img-src data:; frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
 	"x-content-type-options": "nosniff",
 	"referrer-policy": "strict-origin-when-cross-origin",
 };
@@ -58,7 +58,7 @@ export default {
 		const pageState = snapshot ? `-${timeAgo(snapshot.fetchedAt, now)}${isStale(snapshot.fetchedAt, now) ? "-stale" : ""}` : "";
 		// The page ranks by stars today; ?sort=github keeps GitHub's own order
 		const order = url.searchParams.get("sort") === "github" ? "github" : "stars";
-		const etag = pathname === "/" ? `"${version}${pageState}${order === "github" ? "-github" : ""}"` : `"${version}"`;
+		const etag = pathname === "/" ? `"${version}${pageState}${order === "github" ? "-github" : ""}-r${RENDER_VERSION}"` : `"${version}"`;
 		const headers: Record<string, string> = { "cache-control": CACHE_CONTROL, etag };
 		if (snapshot) headers["last-modified"] = new Date(snapshot.fetchedAt).toUTCString();
 

@@ -9,6 +9,8 @@ export function isStale(fetchedAt: string, now: Date): boolean {
 
 // Link previews need absolute URLs. The workers.dev address points here too
 export const SITE_URL = "https://trending.ddewhurst.com";
+// Part of the page's ETag: bump it when the markup changes, so browsers don't revalidate an old page to 304
+export const RENDER_VERSION = "2";
 const TITLE = "Trending Repos: GitHub trending, with memory";
 const DESCRIPTION =
 	"The repositories gaining the most stars on GitHub today, charted every four hours with how many days each has trended.";
@@ -35,8 +37,10 @@ export function renderPage(snapshot: Snapshot | null, now = new Date(), order: C
 		repos.length > 1 ? repos.reduce((best, r, i) => (r.starsToday > repos[best].starsToday ? i : best), 0) : -1;
 	// Gain bars scale to the day's biggest gain, so unsorted gains still compare at a glance
 	const maxGain = Math.max(0, ...repos.map((r) => r.starsToday));
-	// The legend's "days" sample uses a real run from today's chart where there is one
-	const keyDays = Math.max(3, ...repos.map((r) => r.daysTrending ?? 0));
+	// The legend's "days" sample is boxed, so it shows a run of at least MID_RUN days, the longest today if longer.
+	// Without any history (D1 failed) the rows show "–", so the sample is left out
+	const hasHistory = repos.some((r) => r.daysTrending !== undefined);
+	const keyDays = Math.max(MID_RUN, ...repos.map((r) => r.daysTrending ?? 0));
 
 	// Two printed columns on wide screens; one list order for everything else
 	const half = Math.ceil(repos.length / 2);
@@ -116,7 +120,7 @@ ${
 	</div>
 	<div class="key-legend">
 		${newCount ? `<p class="key-sample"><span class="stamp stamp-key" aria-hidden="true">New</span> = first day on GitHub trending</p>` : ""}
-		<p class="key-sample key-days-item"><span class="key-days" aria-hidden="true"><span class="run"><span class="on-n mid">${keyDays}</span><span class="on-l">days</span></span></span> = days on GitHub trending since ${HISTORY_START}; boxed from 4 days</p>
+		${hasHistory ? `<p class="key-sample key-days-item"><span class="key-days" aria-hidden="true"><span class="run"><span class="on-n mid">${keyDays}</span><span class="on-l">days</span></span></span> = days on GitHub trending since ${HISTORY_START}; boxed from ${MID_RUN} days</p>` : ""}
 		${topGainAt >= 0 ? `<p class="key-sample key-bars"><span class="key-bar" aria-hidden="true"><span></span></span> = share of the day's top gain</p>` : ""}
 	</div>
 </div>`
@@ -143,7 +147,8 @@ function renderRow(repo: Repo, position: number, isTopGain: boolean, maxGain: nu
 	const homepage = repo.homepage && /^https?:\/\//i.test(repo.homepage) && !pointsBackToGitHub(repo.homepage) ? repo.homepage : null;
 	const langColor = repo.languageColor && /^#[\da-f]{3,8}$/i.test(repo.languageColor) ? repo.languageColor : null;
 	const delay = Math.min(position, 25) * 40;
-	const bar = maxGain > 0 ? Math.max(8, Math.round((repo.starsToday / maxGain) * 100)) : 0;
+	// The smallest gain still shows a sliver; no gain shows no bar
+	const bar = maxGain > 0 && repo.starsToday > 0 ? Math.max(8, Math.round((repo.starsToday / maxGain) * 100)) : 0;
 
 	return `
 		<li class="row${position === 1 ? " one" : ""}${isTopGain && !byStars ? " top" : ""}">
@@ -170,7 +175,8 @@ function renderRow(repo: Repo, position: number, isTopGain: boolean, maxGain: nu
 // GitHub's own mark for a star count, so the total never reads as today's gain
 const STAR = `<svg class="star" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M8 .9l2.2 4.6 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7z" fill="currentColor"/></svg>`;
 
-// A homepage on github.com (or an org's github.com Pages host) only leads back to GitHub, so it adds nothing
+// A homepage on github.com or one of its subdomains only leads back to GitHub, so it adds nothing.
+// GitHub Pages sites live on *.github.io and stay
 function pointsBackToGitHub(url: string): boolean {
 	try {
 		const host = new URL(url).hostname.toLowerCase();
@@ -221,8 +227,13 @@ export function chartTime(iso: string): { day: string; time: string } | null {
 function cleanDescription(text: string): string {
 	const cleaned = text
 		.replace(/^(?:[\p{Extended_Pictographic}\p{Emoji_Modifier}\u{FE0F}\u{200D}\u{20E3}]|\s|:[a-z0-9_+-]+:)+/u, "")
-		.replace(/\s*https?:\/\/\S+/g, "")
+		// A bare URL goes with any bracket around it; one glued to a word ("git+https://…") is not bare, so it stays
+		.replace(/(^|\s)\(?https?:\/\/[^\s)]*[^\s).,;:!?]\)?/g, "$1")
 		.replace(/\s{2,}/g, " ")
+		.replace(/\s+([.,;:!?])/g, "$1")
+		.trim()
+		// "Docs: https://…" leaves "Docs:", so a dangling separator goes too
+		.replace(/\s*[:\-–—|]$/u, "")
 		.trim();
 	return cleaned || text.trim();
 }
@@ -230,17 +241,22 @@ function cleanDescription(text: string): string {
 // Shortens text to about `width` Latin characters (a CJK character counts as two), at a word or CJK boundary,
 // without trailing punctuation before the ellipsis
 export function clip(text: string, width: number): string {
+	// By code point, so an emoji is never split in half
+	const chars = Array.from(text);
 	let used = 0;
 	let cut = -1;
-	for (let i = 0; i < text.length; i++) {
-		const ch = text[i];
+	for (let i = 0; i < chars.length; i++) {
+		const ch = chars[i];
 		const wide = /[\u2E80-\u9FFF\uAC00-\uD7AF\uF900-\uFAFF\uFF00-\uFFEF]/.test(ch);
 		used += wide ? 2 : 1;
 		if (used > width) {
-			const head = cut > 0 ? text.slice(0, cut) : text.slice(0, i);
+			const head = chars.slice(0, cut > 0 ? cut : i).join("");
 			return `${head.replace(/[\s,.;:!?|\-–—(\[]+$/u, "")}…`;
 		}
-		if (ch === " " || wide) cut = wide ? i + 1 : i;
+		// Chinese and Japanese can break after any character; Korean spaces its words, so it breaks at spaces
+		const breaksAfter = /[\u2E80-\u9FFF\uF900-\uFAFF\uFF00-\uFFEF]/.test(ch);
+		if (ch === " ") cut = i;
+		else if (breaksAfter) cut = i + 1;
 	}
 	return text;
 }
@@ -299,8 +315,6 @@ ${fontFace("Archivo", "archivo-v25-latin-ext.woff2", "400 800", LATIN_EXT)}
 	--ink: #111;
 	--desc: #383838;
 	--muted: #444;
-	/* Short runs of days: clearly lighter than ink, still 4.5:1 on the sheet */
-	--faint: #767676;
 	--rule: #d4d4d4;
 	--hover: #fff8cc;
 	--pos: var(--ink);
@@ -318,7 +332,6 @@ ${fontFace("Archivo", "archivo-v25-latin-ext.woff2", "400 800", LATIN_EXT)}
 		--ink: #e8e4da;
 		--desc: #c9c5bb;
 		--muted: #d2cec4;
-		--faint: #94918a;
 		--rule: #42403b;
 		--hover: #24210f;
 		/* Positions step back a little so the repo name and the gain lead the row */
@@ -639,6 +652,8 @@ footer {
 }
 /* Below desktop the legend wraps, so samples sit in one fixed column and their text lines up */
 @media (max-width: 1100px) {
+	/* One column: the sections give up their boxes, so the first heads stay stuck the whole way down */
+	.col { display: contents; }
 	.key-sample { grid-template-columns: 60px minmax(0, 1fr); }
 	/* The dateline stands beside the title, and the strapline sits under it */
 	.mast-in { grid-template-columns: minmax(0, 1fr) auto; }

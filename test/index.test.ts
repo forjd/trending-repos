@@ -41,6 +41,8 @@ describe("routes", () => {
 		const res = await get("/");
 		expect(res.headers.get("content-security-policy")).toContain("default-src 'none'");
 		expect(res.headers.get("content-security-policy")).toContain("font-src 'self'");
+		// The page loads no remote images
+		expect(res.headers.get("content-security-policy")).toContain("img-src data:;");
 		expect(await res.text()).not.toContain("fonts.googleapis.com");
 		expect(res.headers.get("x-content-type-options")).toBe("nosniff");
 		expect(res.headers.get("cache-control")).toBe("public, max-age=60");
@@ -78,10 +80,16 @@ describe("routes", () => {
 	});
 
 	it("ranks by stars today, or by GitHub's order with ?sort=github, each with its own ETag", async () => {
-		const repo = { owner: "o", name: "r", url: "https://github.com/o/r", description: null, language: null, languageColor: null, stars: 1, forks: 0, starsToday: 1, avatarUrl: "" };
-		await env.TRENDING.put("latest", JSON.stringify({ fetchedAt: new Date().toISOString(), repos: [repo] }));
+		const repo = (name: string, starsToday: number) => ({ owner: "o", name, url: `https://github.com/o/${name}`, description: null, language: null, languageColor: null, stars: 1, forks: 0, starsToday, avatarUrl: "" });
+		await env.TRENDING.put("latest", JSON.stringify({ fetchedAt: new Date().toISOString(), repos: [repo("small", 1), repo("big", 9)] }));
+		const order = (html: string) => [...html.matchAll(/<span class="repo">(\w+)<\/span>/g)].map((m) => m[1]);
 		const stars = await get("/");
 		const github = await get("/?sort=github");
+		const [starsHtml, githubHtml] = [await stars.clone().text(), await github.clone().text()];
+		expect(order(starsHtml)).toEqual(["big", "small"]);
+		expect(order(githubHtml)).toEqual(["small", "big"]);
+		// The other order's ETag must not revalidate to 304
+		expect((await get("/?sort=github", { headers: { "if-none-match": stars.headers.get("etag")! } })).status).toBe(200);
 		expect(await stars.text()).toContain(`<a href="/" aria-current="page">Stars today</a>`);
 		expect(await github.text()).toContain(`<a href="/?sort=github" aria-current="page">GitHub's order</a>`);
 		expect(github.headers.get("etag")).not.toBe(stars.headers.get("etag"));
