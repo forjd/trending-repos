@@ -17,7 +17,8 @@ cron (0 */4 * * *) or POST /__refresh
   → write the snapshot to KV under "latest", unless KV already has a newer one
   → cron only: ping HEALTHCHECK_URL, or <url>/fail if the scrape or the D1 write failed
 
-GET /              → HTML rendered from KV
+GET /              → HTML rendered from KV, ranked by stars today
+GET /?sort=github  → the same page in GitHub's own trending order
 GET /api/trending  → the KV snapshot as JSON
 GET /fonts/*       → static assets from public/, served before the Worker runs
 ```
@@ -103,7 +104,7 @@ A past row is the same repo if its `repo_id` (GitHub's numeric id, so it survive
 Badges are computed at scrape time and stored on each `Repo` in the snapshot:
 
 - `isNew`: first seen today (UTC), and only when a scrape was saved yesterday. Otherwise every repo would be "new" on the first day of history, or after a gap.
-- `daysTrending`: distinct UTC days seen, not necessarily in a row. The page shows it in the "Days on" column (screen readers hear "Trended on N days"), and sets runs of 7 days or more heavier.
+- `daysTrending`: distinct UTC days seen, not necessarily in a row. The page shows it in the "Days on" column (screen readers hear "Trended on N days"), boxes runs of 4 days or more, and prints runs of 7 or more larger.
 
 ## Gotchas
 
@@ -121,4 +122,4 @@ Badges are computed at scrape time and stored on each `Repo` in the snapshot:
 - **Killing dev servers:** `pkill -f wrangler` also matches the shell running it if the command line contains "wrangler". Use `pkill -x workerd` or stop the background task.
 - **To preview on the VM**, use Tailscale Serve (`tailscale serve --bg --https=8787 http://127.0.0.1:8787`), not localhost links. Turn it off afterwards.
 
-_Last updated: 2026-11-01_
+_Last updated: 2026-11-04_
