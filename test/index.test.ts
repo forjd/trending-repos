@@ -77,6 +77,18 @@ describe("routes", () => {
 		expect(await after.text()).toContain(`class="stale"`);
 	});
 
+	it("ranks by stars today, or by GitHub's order with ?sort=github, each with its own ETag", async () => {
+		const repo = { owner: "o", name: "r", url: "https://github.com/o/r", description: null, language: null, languageColor: null, stars: 1, forks: 0, starsToday: 1, avatarUrl: "" };
+		await env.TRENDING.put("latest", JSON.stringify({ fetchedAt: new Date().toISOString(), repos: [repo] }));
+		const stars = await get("/");
+		const github = await get("/?sort=github");
+		expect(await stars.text()).toContain(`<a href="/" aria-current="page">Stars today</a>`);
+		expect(await github.text()).toContain(`<a href="/?sort=github" aria-current="page">GitHub's order</a>`);
+		expect(github.headers.get("etag")).not.toBe(stars.headers.get("etag"));
+		// Anything else is the default order
+		expect((await get("/?sort=nope")).headers.get("etag")).toBe(stars.headers.get("etag"));
+	});
+
 	it("answers HEAD without a body", async () => {
 		const res = await get("/", { method: "HEAD" });
 		expect(res.status).toBe(200);

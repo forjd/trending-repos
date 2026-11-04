@@ -23,7 +23,8 @@ function methodNotAllowed(allow: string): Response {
 
 export default {
 	async fetch(request, env) {
-		const { pathname } = new URL(request.url);
+		const url = new URL(request.url);
+		const { pathname } = url;
 
 		// Manual scrape, e.g. right after a deploy: POST with `authorization: Bearer <REFRESH_KEY>`
 		if (pathname === "/__refresh") {
@@ -55,7 +56,9 @@ export default {
 		const version = snapshot?.fetchedAt ?? "empty";
 		const now = new Date();
 		const pageState = snapshot ? `-${timeAgo(snapshot.fetchedAt, now)}${isStale(snapshot.fetchedAt, now) ? "-stale" : ""}` : "";
-		const etag = pathname === "/" ? `"${version}${pageState}"` : `"${version}"`;
+		// The page ranks by stars today; ?sort=github keeps GitHub's own order
+		const order = url.searchParams.get("sort") === "github" ? "github" : "stars";
+		const etag = pathname === "/" ? `"${version}${pageState}${order === "github" ? "-github" : ""}"` : `"${version}"`;
 		const headers: Record<string, string> = { "cache-control": CACHE_CONTROL, etag };
 		if (snapshot) headers["last-modified"] = new Date(snapshot.fetchedAt).toUTCString();
 
@@ -65,7 +68,7 @@ export default {
 		if (pathname === "/api/trending") {
 			return Response.json(snapshot ?? { fetchedAt: null, repos: [] }, { headers });
 		}
-		return new Response(renderPage(snapshot, now), {
+		return new Response(renderPage(snapshot, now, order), {
 			headers: { ...headers, ...SECURITY_HEADERS, "content-type": "text/html; charset=utf-8" },
 		});
 	},
