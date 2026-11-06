@@ -10,12 +10,12 @@ export function isStale(fetchedAt: string, now: Date): boolean {
 // Link previews need absolute URLs. The workers.dev address points here too
 export const SITE_URL = "https://trending.ddewhurst.com";
 // Part of the page's ETag: bump it when the markup changes, so browsers don't revalidate an old page to 304
-export const RENDER_VERSION = "2";
+export const RENDER_VERSION = "3";
 const TITLE = "Trending Repos: GitHub trending, with memory";
 const DESCRIPTION =
 	"The repositories gaining the most stars on GitHub today, charted every four hours with how many days each has trended.";
 // public/og.png, made from scripts/og-image.html
-const OG_IMAGE_ALT = "Trending Repos, printed as a yellow and black singles chart with positions, days on and stars today.";
+const OG_IMAGE_ALT = "Trending Repos, printed as a yellow, pink and black singles chart with positions, days on and stars today.";
 
 // History in D1 starts here, so "days on" can't count further back
 const HISTORY_START = "5\u00a0Oct\u00a02026";
@@ -310,6 +310,10 @@ ${fontFace("Archivo", "archivo-v25-latin.woff2", "400 800", LATIN)}
 ${fontFace("Archivo", "archivo-v25-latin-ext.woff2", "400 800", LATIN_EXT)}
 :root {
 	--yellow: #ffde17;
+	/* Gain bars: chart yellow is invisible as a thin mark on white, so the light sheet prints them a deep gold */
+	--bar: #977600;
+	/* The second spot colour, for NEW only */
+	--pink: #ff3d8b;
 	--black: #111;
 	--sheet: #fff;
 	--ink: #111;
@@ -329,6 +333,8 @@ ${fontFace("Archivo", "archivo-v25-latin-ext.woff2", "400 800", LATIN_EXT)}
 		--sheet: #161513;
 		/* Full-strength yellow glares as a big block on a dark sheet, so it prints a step deeper */
 		--yellow: #e7c537;
+		--bar: var(--yellow);
+		--pink: #f2508f;
 		--ink: #e8e4da;
 		--desc: #c9c5bb;
 		--muted: #d2cec4;
@@ -355,8 +361,8 @@ body {
 	body { font-weight: 450; -webkit-font-smoothing: auto; }
 	h1, .when-ago, .pos, .on-n, .gain-n, .empty-title { -webkit-font-smoothing: antialiased; }
 	/* Dark type on a light ground prints as it does in light mode */
-	.mast { font-weight: 400; }
-	.mast, .stale, .stamp { -webkit-font-smoothing: antialiased; }
+	.mast, .row.one { font-weight: 400; }
+	.mast, .row.one, .stale, .stamp { -webkit-font-smoothing: antialiased; }
 }
 ::selection { background: var(--yellow); color: var(--black); }
 p { margin: 0; text-wrap: pretty; }
@@ -440,7 +446,7 @@ h1 {
 .key-days .on-n { font-size: 17px; }
 .key-days .on-n.mid { font-size: 16px; }
 .key-bar { display: flex; width: 56px; height: 7px; background: color-mix(in srgb, var(--ink) 12%, transparent); }
-.key-bar span { width: 50%; background: var(--ink); }
+.key-bar span { width: 50%; background: var(--bar); }
 
 main { padding-top: 0; }
 .chart { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; }
@@ -553,33 +559,49 @@ main { padding-top: 0; }
 .t + .t::before { content: "·"; margin-right: 8px; }
 .gain { text-align: right; padding-top: 1px; }
 .gain-n { display: inline-block; font: 800 24px/.9 var(--display); }
-/* A bar under each gain, scaled to the day's biggest, so the unsorted column still compares */
+/* A gold bar under each gain, scaled to the day's biggest, so the unsorted column still compares
+   and the masthead's colour runs down the chart */
 .bar { display: flex; height: 7px; margin-top: 6px; background: color-mix(in srgb, var(--ink) 12%, transparent); }
-.bar span { background: var(--ink); }
+.bar span { background: var(--bar); }
 /* In GitHub's order the day's biggest gain prints on an ink chip */
 .top .gain-n { background: var(--ink); color: var(--sheet); padding: 4px 6px 2px; margin: -4px 0 -2px; }
 
-/* No. 1 leads with a bigger rank figure, on the same sheet as the rest */
+/* No. 1 prints on a yellow band, the masthead's colour, in black type. The tokens remap inside it,
+   so every element keeps its role: grey text is a deep gold, boxed runs and the top-gain chip print yellow on black */
+.row.one, .row.one:hover {
+	--ink: var(--black);
+	--pos: var(--black);
+	--desc: #3b3000;
+	--muted: #3b3000;
+	--sheet: var(--yellow);
+	background: var(--yellow);
+	color: var(--ink);
+	border-bottom-color: var(--black);
+}
+.one .bar span { background: var(--black); }
+.row.one ::selection { background: var(--black); color: var(--yellow); }
+/* All type on the band is black, so the name's underline is stronger to still say "link" */
+.row.one .repo { text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); }
+.row.one:hover .repo, .row.one .name:hover .repo { text-decoration-color: currentColor; }
+/* Pink on yellow barely separates, so a NEW tag on the band gets a black edge */
+.row.one .stamp { box-shadow: inset 0 0 0 1.5px var(--black); }
+/* The band closes with its black rule even when it is the last row in a column */
+.col:last-child .row.one:last-child, .rows .row.one:last-child { border-bottom: 1px solid var(--black); }
 .one .pos { font-size: 44px; color: var(--ink); }
 .one .on { padding-top: 8px; }
 
 .stamp {
 	display: inline-block;
-	/* A small tag tinted with the masthead's yellow: it marks a first day without
-	   turning a chart that is mostly new into a yellow stripe */
+	/* A small pink tag, the one place the second spot colour prints */
 	padding: 3px 5px 2px;
-	background: color-mix(in srgb, var(--yellow) 42%, var(--sheet));
-	color: var(--ink);
+	background: var(--pink);
+	color: var(--black);
 	font: 800 15px/1 var(--display);
 	letter-spacing: .06em;
 	text-transform: uppercase;
 	animation: stamp .42s cubic-bezier(.16, 1, .3, 1) both;
 }
 .stamp-key { animation: none; }
-@media (prefers-color-scheme: dark) {
-	/* A yellow block shouts on the dark sheet, so NEW prints as a yellow outline */
-	.stamp { background: none; color: var(--yellow); box-shadow: inset 0 0 0 1.5px var(--yellow); }
-}
 @keyframes stamp {
 	from { transform: scale(1.9); }
 	to { transform: scale(1); }
@@ -712,6 +734,10 @@ footer {
 	.bar { display: none; }
 	.one .pos { font-size: 44px; }
 	.one .on { margin-top: 43px; padding-top: 0; }
+	/* Phone rows have no side padding, so the band reaches into the gutter to keep its type off the edge */
+	.row.one { margin: 0 -10px; padding: 14px 10px; }
+	/* The stuck heads cover that reach too, so the band never shows beside them as it scrolls under */
+	.heads::before { content: ""; position: absolute; inset: 0 -10px; z-index: -1; background: var(--sheet); }
 	/* The gain sits level with the repo name, not the owner line above it */
 	.gain { align-self: end; }
 	/* Taps land on the name and the homepage even a little off the text */

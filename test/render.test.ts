@@ -254,12 +254,40 @@ describe("freshness and fonts", () => {
 		// The masthead prints black on yellow in both schemes
 		expect(contrast(light("yellow"), light("black"))).toBeGreaterThanOrEqual(7);
 		expect(contrast(dark("yellow"), light("black"))).toBeGreaterThanOrEqual(7);
-		// On the dark sheet the NEW tag is yellow text in a yellow outline
-		expect(contrast(dark("yellow"), dark("sheet"))).toBeGreaterThanOrEqual(7);
 		// Light --pos is var(--ink), so it falls back to ink
 		for (const t of [light, dark]) {
 			for (const fg of ["ink", "muted", "desc", "pos"]) expect(contrast(t("sheet"), t(fg) || t("ink"))).toBeGreaterThanOrEqual(7);
 		}
+		// Gain bars sit on a 12% ink track: they keep 3:1 against it on both sheets.
+		// The dark sheet prints them in its yellow; the light sheet needs a deep gold
+		const hex6 = (c: string) => (c.length === 4 ? `#${[...c.slice(1)].map((d) => d + d).join("")}` : c);
+		const mix = (a: string, b: string, p: number) =>
+			`#${[1, 3, 5].map((i) => Math.round(parseInt(hex6(a).slice(i, i + 2), 16) * p + parseInt(hex6(b).slice(i, i + 2), 16) * (1 - p)).toString(16).padStart(2, "0")).join("")}`;
+		expect(html).toContain("--bar: var(--yellow);");
+		expect(contrast(light("bar"), mix(light("ink"), light("sheet"), 0.12))).toBeGreaterThanOrEqual(3);
+		expect(contrast(dark("yellow"), mix(dark("ink"), dark("sheet"), 0.12))).toBeGreaterThanOrEqual(3);
+		expect(html).toContain(".bar span { background: var(--bar); }");
+		// The NEW tag prints black on pink in both schemes
+		expect(html).toMatch(/\.stamp \{[^}]*background: var\(--pink\);\s*color: var\(--black\);/);
+		expect(contrast(light("pink"), light("black"))).toBeGreaterThanOrEqual(4.5);
+		expect(contrast(dark("pink"), light("black"))).toBeGreaterThanOrEqual(4.5);
+		// The No. 1 band is yellow, with black type and a deep gold for its grey text
+		const band = html.match(/\.row\.one, \.row\.one:hover \{([^}]+)\}/)?.[1] ?? "";
+		expect(band).toContain("--ink: var(--black);");
+		// A boxed run and the top-gain chip print --sheet on --ink, so inside the band they must be yellow on black
+		expect(band).toContain("--sheet: var(--yellow);");
+		expect(band).toContain("background: var(--yellow);");
+		for (const name of ["muted", "desc"]) {
+			const grey = band.match(new RegExp(`--${name}: (#[0-9a-f]{6});`))?.[1] ?? "";
+			expect(grey, `band --${name}`).toMatch(/^#/);
+			for (const yellow of [light("yellow"), dark("yellow")]) expect(contrast(yellow, grey)).toBeGreaterThanOrEqual(7);
+		}
+	});
+
+	it("keeps pink for NEW only", () => {
+		const html = renderPage(null);
+		// Pink is the second spot colour: the NEW tag is the only rule that uses it
+		expect(html.match(/var\(--pink\)/g) ?? []).toHaveLength(1);
 	});
 });
 
