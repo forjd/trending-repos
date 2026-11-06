@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-04T12:00:00Z",
+  "generatedAt": "2026-11-06T12:00:00Z",
   "title": "Design System: Trending Repos",
   "extensions": {
     "colorMeta": {
@@ -20,18 +20,32 @@
           "oklch(97% 0.05 98)"
         ]
       },
-      "new-tint": {
+      "bar-gold": {
         "role": "primary",
-        "displayName": "New Tint",
-        "canonical": "#fff19e",
-        "cssVar": "color-mix(in srgb, var(--yellow) 42%, var(--sheet))",
-        "note": "Not a custom property: the NEW tag's ground on the light sheet, mixed from Chart Yellow and the sheet."
+        "displayName": "Bar Gold",
+        "canonical": "#8a6a00",
+        "cssVar": "--bar",
+        "note": "Gain bars and the key's bar sample on the light sheet; --bar is Night Chart Yellow on the dark sheet."
+      },
+      "stamp-pink": {
+        "role": "secondary",
+        "displayName": "Stamp Pink",
+        "canonical": "#ff3d8b",
+        "cssVar": "--pink",
+        "note": "The NEW tag's ground, with black type. It prints on nothing else."
+      },
+      "band-muted": {
+        "role": "neutral",
+        "displayName": "Band Grey",
+        "canonical": "#3b3000",
+        "cssVar": "--muted / --desc (inside .row.one)",
+        "note": "Grey text inside the No. 1 band."
       },
       "ink": {
         "role": "neutral",
         "displayName": "Ink",
         "canonical": "#111",
-        "cssVar": "--ink / --black",
+        "cssVar": "--ink",
         "tonalRamp": [
           "#111",
           "#383838",
@@ -42,6 +56,13 @@
           "#f0f0f0",
           "#fff"
         ]
+      },
+      "black": {
+        "role": "neutral",
+        "displayName": "Black",
+        "canonical": "#111",
+        "cssVar": "--black",
+        "note": "#111 in both schemes: type on yellow and pink, and the masthead rule. Inside the No. 1 band, --ink is Black."
       },
       "sheet": {
         "role": "neutral",
@@ -66,7 +87,7 @@
         "displayName": "Faint Grey",
         "canonical": "#767676",
         "cssVar": "--faint",
-        "note": "Held at 4.5:1 by the contrast tests; no element prints in it today."
+        "note": "A reserved step at 4.5:1 on the sheet; no element prints in it, and render.ts defines no --faint variable today."
       },
       "rule": {
         "role": "neutral",
@@ -133,6 +154,12 @@
         "displayName": "Night Position Grey",
         "canonical": "#c9c5bb",
         "cssVar": "--pos (dark)"
+      },
+      "stamp-pink-dark": {
+        "role": "secondary",
+        "displayName": "Night Stamp Pink",
+        "canonical": "#f2508f",
+        "cssVar": "--pink (dark)"
       }
     },
     "typographyMeta": {
@@ -146,7 +173,7 @@
       },
       "numeral-position": {
         "displayName": "Rank Numeral",
-        "purpose": "Rank column. 38px at 641-1100px, 36px at >=1101px, 34px on phones. No. 1: 44px (42px at >=1101px), full ink. Night Position Grey on the dark sheet otherwise."
+        "purpose": "Rank column. 38px at 641-1100px, 36px at >=1101px, 34px on phones. No. 1: 44px (42px at >=1101px), black on its yellow band. Night Position Grey on the dark sheet otherwise."
       },
       "numeral-gain": {
         "displayName": "Gain Numeral",
@@ -265,7 +292,7 @@
       "refersTo": "chart-key",
       "description": "Strip under the masthead: live counts and the Rank by switch, then the legend (NEW, a boxed days sample, a bar sample).",
       "html": "<div class=\"ds-key\"><div class=\"ds-key-top\"><p class=\"ds-key-sum\"><strong>17</strong> repos gained <strong>13,245</strong> stars today, <strong>4</strong> of them new to trending.</p><nav class=\"ds-sort\" aria-label=\"Chart order\"><span class=\"ds-sort-l\">Rank by</span><a href=\"#\" aria-current=\"page\">Stars today</a><a href=\"#\">GitHub's order</a></nav></div><div class=\"ds-key-legend\"><p class=\"ds-key-sample\"><span class=\"ds-stamp\">New</span> = first day on GitHub trending</p><p class=\"ds-key-sample\"><span class=\"ds-run\"><span class=\"ds-run-n\">9</span><span class=\"ds-run-l\">days</span></span> = days on GitHub trending since 5 Oct 2026; boxed from 4 days</p><p class=\"ds-key-sample\"><span class=\"ds-key-bar\"><span></span></span> = share of the day's top gain</p></div></div>",
-      "css": ".ds-key { display: grid; gap: 6px; padding: 10px 40px; font: 400 14px/1.45 'Archivo', system-ui, sans-serif; color: #444; background: #fff; border-bottom: 1px solid #d4d4d4; font-variant-numeric: tabular-nums; } .ds-key p { margin: 0; } .ds-key strong { color: #111; font-weight: 800; } .ds-key-sum { color: #111; } .ds-key-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; } .ds-sort { display: flex; align-items: center; font-size: 13px; font-weight: 700; color: #111; } .ds-sort-l { margin-right: 10px; color: #444; font-weight: 600; } .ds-sort a { padding: 5px 10px; border: 1.5px solid #111; color: inherit; text-decoration: none; white-space: nowrap; } .ds-sort a + a { margin-left: -1.5px; } .ds-sort a[aria-current] { background: #111; color: #fff; } .ds-sort a[aria-current]::before { content: ''; display: inline-block; width: 8px; height: 4px; margin: 0 7px 0 1px; border-left: 2px solid; border-bottom: 2px solid; transform: rotate(-45deg); vertical-align: 3px; } .ds-sort a:not([aria-current]):hover { background: #fff8cc; } .ds-sort a:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; } .ds-key-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 40px; } .ds-key-sample { display: flex; align-items: center; gap: 8px; } .ds-stamp { display: inline-block; padding: 3px 5px 2px; background: #fff19e; color: #111; font: 800 15px/1 'Big Shoulders Display', 'Arial Narrow', sans-serif; letter-spacing: .06em; text-transform: uppercase; } .ds-run { display: inline-block; padding: 3px 6px 2px; background: #111; color: #fff; white-space: nowrap; } .ds-run-n { font: 800 16px/1 'Big Shoulders Display', 'Arial Narrow', sans-serif; } .ds-run-l { margin-left: 5px; font: 700 18px/1 'Big Shoulders Display', 'Arial Narrow', sans-serif; letter-spacing: .04em; text-transform: uppercase; } .ds-key-bar { display: flex; width: 56px; height: 7px; background: color-mix(in srgb, #111 12%, transparent); } .ds-key-bar span { width: 50%; background: #111; }"
+      "css": ".ds-key { display: grid; gap: 6px; padding: 10px 40px; font: 400 14px/1.45 'Archivo', system-ui, sans-serif; color: #444; background: #fff; border-bottom: 1px solid #d4d4d4; font-variant-numeric: tabular-nums; } .ds-key p { margin: 0; } .ds-key strong { color: #111; font-weight: 800; } .ds-key-sum { color: #111; } .ds-key-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; } .ds-sort { display: flex; align-items: center; font-size: 13px; font-weight: 700; color: #111; } .ds-sort-l { margin-right: 10px; color: #444; font-weight: 600; } .ds-sort a { padding: 5px 10px; border: 1.5px solid #111; color: inherit; text-decoration: none; white-space: nowrap; } .ds-sort a + a { margin-left: -1.5px; } .ds-sort a[aria-current] { background: #111; color: #fff; } .ds-sort a[aria-current]::before { content: ''; display: inline-block; width: 8px; height: 4px; margin: 0 7px 0 1px; border-left: 2px solid; border-bottom: 2px solid; transform: rotate(-45deg); vertical-align: 3px; } .ds-sort a:not([aria-current]):hover { background: #fff8cc; } .ds-sort a:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; } .ds-key-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 40px; } .ds-key-sample { display: flex; align-items: center; gap: 8px; } .ds-stamp { display: inline-block; padding: 3px 5px 2px; background: #ff3d8b; color: #111; font: 800 15px/1 'Big Shoulders Display', 'Arial Narrow', sans-serif; letter-spacing: .06em; text-transform: uppercase; } .ds-run { display: inline-block; padding: 3px 6px 2px; background: #111; color: #fff; white-space: nowrap; } .ds-run-n { font: 800 16px/1 'Big Shoulders Display', 'Arial Narrow', sans-serif; } .ds-run-l { margin-left: 5px; font: 700 18px/1 'Big Shoulders Display', 'Arial Narrow', sans-serif; letter-spacing: .04em; text-transform: uppercase; } .ds-key-bar { display: flex; width: 56px; height: 7px; background: color-mix(in srgb, #111 12%, transparent); } .ds-key-bar span { width: 50%; background: #8a6a00; }"
     },
     {
       "name": "Column Heads",
@@ -281,7 +308,7 @@
       "refersTo": "chart-row",
       "description": "Ruled four-column row: rank, days on, repository (\"owner / name\" with only the name underlined, meta line, description cut at a word), stars today over a share-of-top-gain bar.",
       "html": "<ol class=\"ds-rows\" start=\"2\"><li class=\"ds-row\"><span class=\"ds-pos\">2</span><span class=\"ds-on\"><span class=\"ds-on-n\">3</span><span class=\"ds-on-l\">days</span></span><a class=\"ds-name\" href=\"#\"><span class=\"ds-who\">lightpanda-io / </span><span class=\"ds-repo\">browser</span></a><p class=\"ds-by\"><span class=\"ds-lang\"><span class=\"ds-swatch\" style=\"background:#ec915c\"></span>Zig</span><span class=\"ds-lang\"><svg viewBox=\"0 0 16 16\" width=\"12\" height=\"12\" aria-hidden=\"true\"><path d=\"M8 .9l2.2 4.6 5 .7-3.6 3.5.9 5L8 12.3l-4.5 2.4.9-5L.8 6.2l5-.7z\" fill=\"currentColor\"/></svg>39.8k total</span><span>1.4k forks</span><a class=\"ds-site\" href=\"#\">lightpanda.io<svg viewBox=\"0 0 10 10\" width=\"9\" height=\"9\" aria-hidden=\"true\"><path d=\"M3 1.5h5.5V7M8.5 1.5 1.5 8.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\"/></svg></a></p><p class=\"ds-desc\" title=\"Lightpanda: the headless browser designed for AI and automation.\">Lightpanda: the headless browser designed for AI and automation.</p><p class=\"ds-gain\"><span class=\"ds-gain-n\">+827</span><span class=\"ds-bar\"><span style=\"width:54%\"></span></span></p></li></ol>",
-      "css": ".ds-rows { list-style: none; margin: 0; padding: 0; font: 400 15px/1.45 'Archivo', system-ui, sans-serif; font-variant-numeric: tabular-nums; color: #111; background: #fff; } .ds-rows p { margin: 0; } .ds-row { display: grid; grid-template-columns: 40px 86px minmax(0, 1fr) 128px; column-gap: 14px; align-items: start; padding: 12px 10px; border-bottom: 1px solid #d4d4d4; } .ds-row:hover { background: #fff8cc; } .ds-row:hover .ds-repo { text-decoration-color: currentColor; } .ds-row:has(.ds-name:focus-visible) { outline: 2px solid #111; outline-offset: -2px; } .ds-pos { grid-column: 1; grid-row: 1 / span 4; font: 900 40px/.84 'Big Shoulders Display', 'Arial Narrow', sans-serif; } .ds-on { grid-column: 2; grid-row: 1 / span 4; text-align: center; padding-top: 3px; } .ds-on-n { font: 800 23px/1 'Big Shoulders Display', 'Arial Narrow', sans-serif; } .ds-on-l { margin-left: 5px; font: 700 18px/1 'Big Shoulders Display', 'Arial Narrow', sans-serif; letter-spacing: .04em; text-transform: uppercase; } .ds-name { grid-column: 3; grid-row: 1; justify-self: start; color: inherit; font-weight: 800; font-size: 17px; line-height: 1.2; text-decoration: none; } .ds-name:focus-visible { outline: none; } .ds-who { font-weight: 500; color: #444; } .ds-repo { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); } .ds-by { grid-column: 3; grid-row: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 14px; margin-top: 4px; font-size: 14px; color: #444; } .ds-lang { display: inline-flex; align-items: center; gap: 5px; } .ds-swatch { width: 10px; height: 10px; filter: saturate(.75); } .ds-site { display: inline-flex; align-items: center; gap: 4px; color: inherit; text-decoration: none; text-underline-offset: 3px; } .ds-site:hover { color: #111; text-decoration: underline; } .ds-site:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; } .ds-desc { grid-column: 3 / -1; grid-row: 3; margin-top: 5px; font-size: 14px; color: #383838; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; } .ds-gain { grid-column: 4; grid-row: 1 / span 2; text-align: right; padding-top: 1px; } .ds-gain-n { display: inline-block; font: 800 24px/.9 'Big Shoulders Display', 'Arial Narrow', sans-serif; } .ds-bar { display: flex; height: 7px; margin-top: 6px; background: color-mix(in srgb, #111 12%, transparent); } .ds-bar span { background: #111; }"
+      "css": ".ds-rows { list-style: none; margin: 0; padding: 0; font: 400 15px/1.45 'Archivo', system-ui, sans-serif; font-variant-numeric: tabular-nums; color: #111; background: #fff; } .ds-rows p { margin: 0; } .ds-row { display: grid; grid-template-columns: 40px 86px minmax(0, 1fr) 128px; column-gap: 14px; align-items: start; padding: 12px 10px; border-bottom: 1px solid #d4d4d4; } .ds-row:hover { background: #fff8cc; } .ds-row:hover .ds-repo { text-decoration-color: currentColor; } .ds-row:has(.ds-name:focus-visible) { outline: 2px solid #111; outline-offset: -2px; } .ds-pos { grid-column: 1; grid-row: 1 / span 4; font: 900 40px/.84 'Big Shoulders Display', 'Arial Narrow', sans-serif; } .ds-on { grid-column: 2; grid-row: 1 / span 4; text-align: center; padding-top: 3px; } .ds-on-n { font: 800 23px/1 'Big Shoulders Display', 'Arial Narrow', sans-serif; } .ds-on-l { margin-left: 5px; font: 700 18px/1 'Big Shoulders Display', 'Arial Narrow', sans-serif; letter-spacing: .04em; text-transform: uppercase; } .ds-name { grid-column: 3; grid-row: 1; justify-self: start; color: inherit; font-weight: 800; font-size: 17px; line-height: 1.2; text-decoration: none; } .ds-name:focus-visible { outline: none; } .ds-who { font-weight: 500; color: #444; } .ds-repo { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); } .ds-by { grid-column: 3; grid-row: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 14px; margin-top: 4px; font-size: 14px; color: #444; } .ds-lang { display: inline-flex; align-items: center; gap: 5px; } .ds-swatch { width: 10px; height: 10px; filter: saturate(.75); } .ds-site { display: inline-flex; align-items: center; gap: 4px; color: inherit; text-decoration: none; text-underline-offset: 3px; } .ds-site:hover { color: #111; text-decoration: underline; } .ds-site:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; } .ds-desc { grid-column: 3 / -1; grid-row: 3; margin-top: 5px; font-size: 14px; color: #383838; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; } .ds-gain { grid-column: 4; grid-row: 1 / span 2; text-align: right; padding-top: 1px; } .ds-gain-n { display: inline-block; font: 800 24px/.9 'Big Shoulders Display', 'Arial Narrow', sans-serif; } .ds-bar { display: flex; height: 7px; margin-top: 6px; background: color-mix(in srgb, #111 12%, transparent); } .ds-bar span { background: #8a6a00; }"
     },
     {
       "name": "Top Gain Chip",
@@ -289,7 +316,7 @@
       "refersTo": "top-gain-chip",
       "description": "In GitHub's order only, the day's biggest gain prints reversed on an ink chip. In stars order No. 1 is the top gain, so no chip prints.",
       "html": "<p class=\"ds-tg\"><span class=\"ds-tg-n\">+1,527</span><span class=\"ds-tg-bar\"><span style=\"width:100%\"></span></span></p>",
-      "css": ".ds-tg { margin: 0; width: 128px; text-align: right; font-variant-numeric: tabular-nums; } .ds-tg-n { display: inline-block; padding: 4px 6px 2px; margin: -4px 0 -2px; background: #111; color: #fff; font: 800 24px/.9 'Big Shoulders Display', 'Arial Narrow', sans-serif; } .ds-tg-bar { display: flex; height: 7px; margin-top: 6px; background: color-mix(in srgb, #111 12%, transparent); } .ds-tg-bar span { background: #111; }"
+      "css": ".ds-tg { margin: 0; width: 128px; text-align: right; font-variant-numeric: tabular-nums; } .ds-tg-n { display: inline-block; padding: 4px 6px 2px; margin: -4px 0 -2px; background: #111; color: #fff; font: 800 24px/.9 'Big Shoulders Display', 'Arial Narrow', sans-serif; } .ds-tg-bar { display: flex; height: 7px; margin-top: 6px; background: color-mix(in srgb, #111 12%, transparent); } .ds-tg-bar span { background: #8a6a00; }"
     },
     {
       "name": "Days On Cell",
@@ -303,9 +330,9 @@
       "name": "NEW Tag",
       "kind": "chip",
       "refersTo": "stamp-new",
-      "description": "Yellow-tinted tag on the light sheet, yellow outline on the dark sheet; presses onto the sheet once on load.",
+      "description": "Pink tag with black type on both sheets; presses onto the sheet once on load.",
       "html": "<span class=\"ds-stamp\">New</span>",
-      "css": ".ds-stamp { display: inline-block; padding: 3px 5px 2px; background: #fff19e; color: #111; font: 800 15px/1 'Big Shoulders Display', 'Arial Narrow', sans-serif; letter-spacing: .06em; text-transform: uppercase; animation: ds-stamp .42s cubic-bezier(.16, 1, .3, 1) both; } @keyframes ds-stamp { from { transform: scale(1.9); } to { transform: scale(1); } } @media (prefers-color-scheme: dark) { .ds-stamp { background: none; color: #e7c537; box-shadow: inset 0 0 0 1.5px #e7c537; } } @media (prefers-reduced-motion: reduce) { .ds-stamp { animation: none; } }"
+      "css": ".ds-stamp { display: inline-block; padding: 3px 5px 2px; background: #ff3d8b; color: #111; font: 800 15px/1 'Big Shoulders Display', 'Arial Narrow', sans-serif; letter-spacing: .06em; text-transform: uppercase; animation: ds-stamp .42s cubic-bezier(.16, 1, .3, 1) both; } @keyframes ds-stamp { from { transform: scale(1.9); } to { transform: scale(1); } } @media (prefers-color-scheme: dark) { .ds-stamp { background: #f2508f; } } @media (prefers-reduced-motion: reduce) { .ds-stamp { animation: none; } }"
     },
     {
       "name": "Footer",
@@ -318,24 +345,29 @@
   ],
   "narrative": {
     "northStar": "The Trade-Paper Chart Sheet",
-    "overview": "The page is a printed singles chart, not a list of cards. A yellow masthead band carries the title, the strapline and the dateline, which leads with how long ago the chart was updated. Below it, a key strip gives the day's totals, a \"Rank by\" switch and a legend. Then a dense numbered sheet prints four columns per row: rank, days on, the repository, and stars today. Two inks do all the work: chart yellow and ink black on a white sheet. Hierarchy comes from condensed display numerals at very different sizes, heavy and hairline rules, and small reversed ink boxes that mark the facts worth a second look.\n\nThe chart ranks by stars today by default, so No. 1 is the day's top gain. GitHub's own order is one click away on the switch. Memory is the point of difference: the \"Days on\" column counts the days each repo has trended, and long runs print boxed in ink so staying power reads down the column at a glance.\n\nDensity is the point. On wide screens the sheet prints two columns at chart density, paired row by row, so a full chart reads like a page of a trade paper. On phones it collapses to one column without losing the rank, days-on and gain figures. The system follows the operating system's light and dark preference; the dark sheet keeps the yellow band.\n\nThere is no client script. Motion is one gesture: the NEW tag presses onto the sheet once on load.",
+    "overview": "The page is a printed singles chart, not a list of cards. A yellow masthead band carries the title, the strapline and the dateline, which leads with how long ago the chart was updated. Below it, a key strip gives the day's totals, a \"Rank by\" switch and a legend. Then a dense numbered sheet prints four columns per row: rank, days on, the repository, and stars today. Three inks do the work: chart yellow and ink black on a white sheet, with pink as a second spot colour for NEW. Yellow runs down the chart in the gain bars and the No. 1 band. Hierarchy comes from condensed display numerals at very different sizes, heavy and hairline rules, and small reversed ink boxes that mark the facts worth a second look.\n\nThe chart ranks by stars today by default, so No. 1 is the day's top gain. GitHub's own order is one click away on the switch. Memory is the point of difference: the \"Days on\" column counts the days each repo has trended, and long runs print boxed in ink so staying power reads down the column at a glance.\n\nDensity is the point. On wide screens the sheet prints two columns at chart density, paired row by row, so a full chart reads like a page of a trade paper. On phones it collapses to one column without losing the rank, days-on and gain figures. The system follows the operating system's light and dark preference; the dark sheet keeps the yellow band.\n\nThere is no client script. Motion is one gesture: the NEW tag presses onto the sheet once on load.",
     "keyCharacteristics": [
-      "Chart yellow masthead band; white sheet; ink #111. Inside the chart, yellow marks NEW only.",
+      "Chart yellow masthead band; white sheet; ink #111. Inside the chart, yellow prints the gain bars (a deep gold on the light sheet) and the No. 1 band; pink prints NEW.",
       "Condensed Big Shoulders Display numerals for ranks, gains, days on and the dateline's age; Archivo for all text.",
       "Ruled, not boxed: hairline row rules, a 3px rule under column heads and over the footer, a 6px rule under the masthead, a 2px ink divider between the desktop columns.",
       "Reversed ink boxes for rank-worthy facts: runs of 4 days or more, the top gain in GitHub's order, the active rank order.",
-      "Square corners everywhere; no shadows.",
+      "Square corners everywhere; no drop shadows.",
       "Tabular numerals across the whole page."
     ],
     "rules": [
       {
-        "name": "The Yellow Means New Rule",
-        "body": "Inside the chart, a yellow mark means \"first day on GitHub trending\" and nothing else. The top gain, long runs and the active order print in ink, never yellow. The row hover wash is a tint, not a mark.",
+        "name": "The Pink Means New Rule",
+        "body": "Pink means \"first day on GitHub trending\" and nothing else. Long runs, the top-gain chip and the active order print in ink, never pink.",
         "section": "colors"
       },
       {
-        "name": "The Two-Ink Rule",
-        "body": "Everything prints in yellow and ink. Language swatches are the only other colours, because they are data from GitHub, not palette.",
+        "name": "The Yellow Is the Chart Rule",
+        "body": "Inside the chart, yellow belongs to the gain and the position: the bars and the No. 1 band. It never marks a state. The row hover wash is a tint, not a mark.",
+        "section": "colors"
+      },
+      {
+        "name": "The Three-Ink Rule",
+        "body": "Everything prints in yellow, pink and ink. Language swatches are the only other colours, because they are data from GitHub, not palette.",
         "section": "colors"
       },
       {
@@ -366,7 +398,7 @@
     ],
     "dos": [
       "**Do** set every ranking figure (rank, days on, gain, the dateline's age) in Big Shoulders Display, at sizes that keep rank largest.",
-      "**Do** keep yellow inside the chart for NEW only.",
+      "**Do** keep pink for NEW only, and yellow inside the chart for the gain bars and the No. 1 band.",
       "**Do** mark rank-worthy facts with a reversed ink box: runs of 4 days or more, the top gain in GitHub's order, the active rank order.",
       "**Do** separate rows with 1px hairlines and heads with a 3px ink rule.",
       "**Do** keep the two-column chart in DOM order as two ordered lists, the second with `start`, and pair their rows with subgrid.",
@@ -380,8 +412,8 @@
     "donts": [
       "**Don't** put repos in cards, rounded boxes or shadowed panels.",
       "**Don't** round corners.",
-      "**Don't** add a third palette colour; language swatches are data, not palette.",
-      "**Don't** reverse the No. 1 row or mark the top gain in yellow.",
+      "**Don't** add a fourth palette colour; language swatches are data, not palette.",
+      "**Don't** reverse the No. 1 row in ink; it prints on yellow. Don't give the top-gain chip a yellow or pink ground.",
       "**Don't** print avatars; the owner's name is enough.",
       "**Don't** print a truncated fragment of a link; hide it whole.",
       "**Don't** link a homepage that leads back to GitHub.",
