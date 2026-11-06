@@ -311,13 +311,13 @@ Square corners throughout (0px): language swatches (10px squares, desaturated to
 ## Components
 
 ### Masthead
-Chart yellow band with black type, closed by a 6px black rule. Title left; strapline ("GitHub trending, with memory") and a one-line description centre (max 54ch); dateline right: an "Updated" label, then the age in display caps ("2 HOURS AGO"), then "Chart of Sun 1 Nov 2026, 16:00 UTC" with the time in a `<time>` element. The age leads because it needs no time-zone sums. The dateline is omitted when there is no snapshot or the timestamp does not parse.
+Chart yellow band with black type, closed by a 6px black rule. Text selected in it prints yellow on black, because the page's yellow selection would not show on the band. Title left; strapline ("GitHub trending, with memory") and a one-line description centre (max 54ch); dateline right: an "Updated" label, then the age in display caps ("2 HOURS AGO"), then "Chart of Sun 1 Nov 2026, 16:00 UTC" with the time in a `<time>` element. The age leads because it needs no time-zone sums. The dateline is omitted when there is no snapshot or the timestamp does not parse.
 
 ### Chart Key
 See Layout. Bold ink figures inside Press Grey prose; the NEW sample is static (no press motion).
 
 ### Rank By Switch
-A segmented control of two links, "Stars today" (`/`) and "GitHub's order" (`/?sort=github`), in a `<nav aria-label="Chart order">` after a "Rank by" label. Each option has a 1.5px ink border; the borders overlap so the pair reads as one control. The current option has `aria-current="page"`, an ink fill with sheet text, and a drawn check before its label. The other option takes the yellow wash on hover. No underlines.
+A segmented control of two links, "Stars today" (`/`) and "GitHub's order" (`/?sort=github`), in a `<nav aria-label="Chart order">` after a "Rank by" label. Each option has a 1.5px ink border; the borders overlap so the pair reads as one control. The current option has `aria-current="page"`, an ink fill with sheet text, and a drawn check before its label. The other option takes the yellow wash on hover. Both options draw an ink focus ring, because the current option's sheet-coloured text would make a currentColor ring vanish on the sheet. No underlines.
 
 ### Stale Warning
 When the snapshot is more than 12 hours old (three missed runs), a full-width strip prints between the masthead and the key: the sheet reversed (ink ground, sheet-coloured text), Archivo 600 at 14px, centred, `role="status"`. It is the one place the chart admits it is old, so it never uses yellow.
@@ -331,7 +331,7 @@ When the snapshot is more than 12 hours old (three missed runs), a full-width st
 - **Top-gain chip:** in GitHub's order, the row with the day's biggest gain (on a tie, the higher position) prints its gain reversed, on an ink chip. In stars order there is no chip, because No. 1 is the top gain.
 - **No. 1:** prints on a Chart Yellow band, the masthead's colour, never reversed in ink. Its rank numeral is larger (44px). The band remaps the tokens: type is black, grey text is Band Grey, a boxed run and the top-gain chip print yellow on black, and the gain bar prints in black. The name's underline is 60% of the text colour, not 45%, because all type on the band is black. A NEW tag on the band gets a 1.5px black edge, and language swatches get a 1px edge at 40% black, so a yellow swatch does not vanish. The band keeps its colour on hover, closes with a 1px black rule (also as the last row of a column), and on phones reaches 10px into the gutter so its type does not touch the edge. Text selection inside it is black with yellow text. The band marks position 1 in either order.
 - **Hover:** yellow wash background (No. 1 keeps its band) and a solid underline on the name.
-- **Focus:** the row draws a 2px ink outline inset 2px when its name link has focus. Other links use a 2px currentColor outline, offset 2px.
+- **Focus:** the row draws a 2px ink outline inset 2px when its name link has focus. Other links use a 2px currentColor outline, offset 2px, except the "Rank by" options, which use ink.
 - **Degrades quietly:** a missing language, homepage or topics removes its element. A missing description prints "No description" in italic Press Grey, so every row keeps its shape.
 
 ### Days On Cell

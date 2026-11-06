@@ -10,7 +10,7 @@ export function isStale(fetchedAt: string, now: Date): boolean {
 // Link previews need absolute URLs. The workers.dev address points here too
 export const SITE_URL = "https://trending.ddewhurst.com";
 // Part of the page's ETag: bump it when the markup changes, so browsers don't revalidate an old page to 304
-export const RENDER_VERSION = "3";
+export const RENDER_VERSION = "4";
 const TITLE = "Trending Repos: GitHub trending, with memory";
 const DESCRIPTION =
 	"The repositories gaining the most stars on GitHub today, charted every four hours with how many days each has trended.";
@@ -365,6 +365,8 @@ body {
 	.mast, .row.one, .stale, .stamp { -webkit-font-smoothing: antialiased; }
 }
 ::selection { background: var(--yellow); color: var(--black); }
+/* The masthead is yellow already, so its selection reverses to black */
+.mast ::selection { background: var(--black); color: var(--yellow); }
 p { margin: 0; text-wrap: pretty; }
 /* One underline for every link: thin, offset, a quiet tint of the text colour that goes solid on hover */
 a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); }
@@ -439,6 +441,8 @@ h1 {
 .sort a[aria-current] { background: var(--ink); color: var(--sheet); }
 .sort a[aria-current]::before { content: ""; display: inline-block; width: 8px; height: 4px; margin: 0 7px 0 1px; border-left: 2px solid; border-bottom: 2px solid; transform: rotate(-45deg); vertical-align: 3px; }
 .sort a:not([aria-current]):hover { background: var(--hover); }
+/* The current option's text is sheet-coloured, so a currentColor ring would vanish on the sheet */
+.sort a:focus-visible { outline-color: var(--ink); }
 .key-legend { display: grid; grid-template-columns: repeat(4, max-content); align-items: center; gap: 8px 40px; }
 .key-sample { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 8px; }
 .key-sample > :first-child { justify-self: start; }
