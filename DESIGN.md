@@ -3,10 +3,11 @@ name: Trending Repos
 description: GitHub trending printed as a three-ink trade-paper singles chart (yellow, pink and black), with memory.
 colors:
   chart-yellow: "#ffde17"
-  bar-gold: "#977600"
+  bar-gold: "#8a6a00"
   stamp-pink: "#ff3d8b"
   band-muted: "#3b3000"
   ink: "#111"
+  black: "#111"
   sheet: "#fff"
   desc: "#383838"
   muted: "#444"
@@ -105,7 +106,7 @@ spacing:
 components:
   masthead:
     backgroundColor: "{colors.chart-yellow}"
-    textColor: "{colors.ink}"
+    textColor: "{colors.black}"
     typography: "{typography.display}"
     rounded: "{rounded.none}"
     padding: "16px 0 14px"
@@ -152,16 +153,16 @@ components:
     padding: "3px 6px 2px"
   stamp-new:
     backgroundColor: "{colors.stamp-pink}"
-    textColor: "{colors.ink}"
+    textColor: "{colors.black}"
     typography: "{typography.stamp}"
     rounded: "{rounded.none}"
     padding: "3px 5px 2px"
   stamp-new-dark:
     backgroundColor: "{colors.stamp-pink-dark}"
-    textColor: "{colors.ink}"
+    textColor: "{colors.black}"
   chart-row-one:
     backgroundColor: "{colors.chart-yellow}"
-    textColor: "{colors.ink}"
+    textColor: "{colors.black}"
   gain-bar:
     backgroundColor: "{colors.bar-gold}"
   gain-bar-dark:
@@ -201,20 +202,20 @@ A three-ink trade-paper palette (yellow, pink and ink) on a white or near-black 
 
 ### Primary
 - **Chart Yellow** (`chart-yellow`): the masthead band, the No. 1 band, the text-selection highlight, the light `theme-color` and the favicon.
-- **Bar Gold** (`bar-gold`, `--bar`): the gain bars and the key's bar sample on the light sheet. Chart Yellow is invisible as a 7px mark on white (1.0:1 on the track), so the bars print a deep gold that keeps 3:1 on the track.
+- **Bar Gold** (`bar-gold`, `--bar`): the gain bars and the key's bar sample on the light sheet. Chart Yellow is invisible as a 7px mark on white (1.0:1 on the track), so the bars print a deep gold that keeps 3:1 on the track, also on a hovered row.
 - **Night Chart Yellow** (`chart-yellow-dark`): Chart Yellow under `prefers-color-scheme: dark`, for the masthead, the No. 1 band, the gain bars (`--bar` is Night Chart Yellow on the dark sheet), the selection highlight and the dark `theme-color`. The favicon keeps Chart Yellow.
 
 ### Secondary
-- **Stamp Pink** (`stamp-pink`): the NEW tag's ground, with black type (5.7:1). It prints on nothing else.
+- **Stamp Pink** (`stamp-pink`): the NEW tag's ground, with black type (5.7:1). It prints on nothing else. This is the one text pair held at AA (4.5:1) rather than 7:1: a pink light enough for 7:1 would lose its edge against the white sheet.
 - **Night Stamp Pink** (`stamp-pink-dark`): Stamp Pink a little softer on the dark sheet, at the same lightness, still with black type.
 
 ### Neutral
-- **Ink** (`ink`): all primary text, rank and days numerals, gains, the masthead rule, the column-head and footer rules, the column divider, gain bar tracks (at 12%), focus outlines, and the ground of every reversed box (days runs, the top-gain chip, the active switch option, the stale strip).
-- **Black** (`--black`, #111 in both schemes): type on yellow and pink (the masthead, the No. 1 band, the NEW tag). Inside the No. 1 band, `--ink` is Black, so the band's gain bar, focus outline, boxed-run ground and top-gain chip print Black.
+- **Ink** (`ink`): all primary text, rank and days numerals, gains, the column-head and footer rules, the column divider, gain bar tracks (at 12%), focus outlines, and the ground of every reversed box (days runs, the top-gain chip, the active switch option, the stale strip).
+- **Black** (`--black`, #111 in both schemes): type on yellow and pink (the masthead, the No. 1 band, the NEW tag), and the masthead rule. Inside the No. 1 band, `--ink` is Black, so the band's gain bar, focus outline, boxed-run ground and top-gain chip print Black.
 - **Sheet** (`sheet`): the page background, and the text in every reversed ink box (Chart Yellow inside the No. 1 band).
 - **Body Grey** (`desc`): repository descriptions.
 - **Press Grey** (`muted`): secondary text: the owner, the meta line (language, total stars, forks, homepage), topics, the chart key's prose, the "Rank by" label, footer prose, the "–" no-history mark and the italic "No description".
-- **Faint Grey** (`faint`): a quiet step, 4.5:1 on the sheet. The contrast tests hold it there; no current element prints in it.
+- **Faint Grey** (`faint`): a quiet step, 4.5:1 on the sheet. No current element prints in it, and the page defines no CSS variable for it.
 - **Hairline** (`rule`): 1px row rules and the key strip's bottom rule.
 - **Yellow Wash** (`hover-wash`): row hover and the hover on the inactive switch option.
 - **Band Grey** (`band-muted`): a deep gold for Body Grey's and Press Grey's roles inside the No. 1 band (9.8:1 on Chart Yellow, 7.7:1 on Night Chart Yellow).
@@ -228,7 +229,7 @@ The dark sheet is newsprint at night, not white on black. Pure white on near-bla
 - Yellow steps down to `chart-yellow-dark` (`#e7c537`). Full-strength yellow on the near-black sheet is the brightest thing on the page by far, and it glares. Ink #111 on it stays above 11:1. Do not push the dark yellow back to `#ffde17`. The No. 1 band is the one large yellow block inside the dark chart. It is deliberate: No. 1 earns the masthead's colour.
 - The NEW tag fills on both sheets, in Night Stamp Pink on the dark one. It is a small tag, so it does not glare as a yellow block would.
 - Rank numerals step down to `position-dark`: a column of large, full-white 900-weight figures pulls the eye off the repository names. Gains outside the No. 1 band stay full Ink, because they lead the row with the name.
-- The tests hold ink and Press Grey at 7:1 or more on both sheets, Faint Grey at 4.5:1 or more, ink on both yellows at 7:1 or more, black on both pinks at 4.5:1 or more, Band Grey on both yellows at 7:1 or more, and the gain bars at 3:1 or more on their track on both sheets.
+- The tests hold ink, Body Grey and Press Grey at 7:1 or more on both sheets, black on both yellows at 7:1 or more, black on both pinks at 4.5:1 or more, both pinks at 3:1 or more on their sheets, Band Grey on both yellows at 7:1 or more, and the gain bars at 3:1 or more on their track, plain and hovered, on both sheets.
 
 ### Named Rules
 **The Pink Means New Rule.** Pink means "first day on GitHub trending" and nothing else. Long runs, the top-gain chip and the active order print in ink, never pink.
@@ -273,7 +274,7 @@ The page is a centred sheet, max 1440px, with 40px side gutters (16px at 640px a
 
 **Masthead.** A three-column grid (title, strapline and description, dateline), bottom-aligned, gaps 16px by 40px. At 1100px and below the title and strapline stack on the left and the dateline stands to their right. At 640px everything stacks: the title on one line, the strapline without its description (the key already says what the chart is), then the dateline on one line, "UPDATED 2 HOURS AGO", over "Chart of Sun 1 Nov 2026, 16:00 UTC".
 
-**Chart key strip.** A full-width strip under the masthead, padded 10px, closed by a hairline. Its top line puts the live counts ("17 repos gained 13,245 stars today, 4 of them new to trending.") on the left and the "Rank by" switch on the right; a screen-reader-only sentence names the order. Under it, the legend: NEW, a boxed days sample ("N DAYS = days on GitHub trending since 5 Oct 2026; boxed from 4 days"), and a bar sample ("share of the day's top gain"). The days sample shows today's longest run (at least 3). The NEW sample is omitted when no repo is new, and the bar sample when there is only one repo. At 1100px and below the samples sit in a fixed 60px column so their text lines up; on phones that column is 52px, the same as the rank column, and the "Rank by" label takes the same 52px, so the legend text, the switch and the repository column share one left edge. The bar sample is hidden on phones, where bars are hidden.
+**Chart key strip.** A full-width strip under the masthead, padded 10px, closed by a hairline. Its top line puts the live counts ("17 repos gained 13,245 stars today, 4 of them new to trending.") on the left and the "Rank by" switch on the right; a screen-reader-only sentence names the order. Under it, the legend: NEW, a boxed days sample ("N DAYS = days on GitHub trending since 5 Oct 2026; boxed from 4 days"), and a bar sample ("share of the day's top gain"). The days sample shows today's longest run (at least 4). The NEW sample is omitted when no repo is new, and the bar sample when there is only one repo. At 1100px and below the samples sit in a fixed 60px column so their text lines up; on phones that column is 52px, the same as the rank column, and the "Rank by" label takes the same 52px, so the legend text, the switch and the repository column share one left edge. The bar sample is hidden on phones, where bars are hidden.
 
 **Chart order.** `/` ranks by stars today; the sort is stable, so ties keep GitHub's order. `/?sort=github` keeps github.com/trending's own order. The ETag carries the order.
 
@@ -296,12 +297,12 @@ The page is a centred sheet, max 1440px, with 40px side gutters (16px at 640px a
 
 ## Elevation & Depth
 
-The system is flat. There are no shadows. Depth comes from print devices: rule weight (1px hairline, 2px column divider, 3px head and footer rules, 6px masthead rule), solid bands of colour, and small reversed ink boxes. The one `box-shadow` in the build is a 1.5px inset black edge on a NEW tag inside the No. 1 band, where pink on yellow barely separates. It is a stroke with no offset or blur.
+The system is flat. There are no drop shadows. Depth comes from print devices: rule weight (1px hairline, 2px column divider, 3px head and footer rules, 6px masthead rule), solid bands of colour, and small reversed ink boxes. The one `box-shadow` in the build is a 1.5px inset black edge on a NEW tag inside the No. 1 band, where pink on yellow barely separates. It is a stroke with no offset or blur.
 
 ### Named Rules
-**The Rules, Not Boxes Rule.** Separate content with rules of graded weight. Do not use cards, borders on four sides, or shadows. The only four-sided borders are the "Rank by" switch, which is a control, not a container.
+**The Rules, Not Boxes Rule.** Separate content with rules of graded weight. Do not use cards, borders on four sides, or drop shadows. The only four-sided borders are the "Rank by" switch, which is a control, not a container.
 
-**The Band Edge Rule.** In dark mode the 6px ink rule under the masthead does not print on the near-black sheet; the yellow band's own edge serves as the rule. Do not add a substitute rule colour to make it show.
+**The Band Edge Rule.** In dark mode the 6px black rule under the masthead does not print on the near-black sheet; the yellow band's own edge serves as the rule. Do not add a substitute rule colour to make it show.
 
 ## Shapes
 
@@ -310,7 +311,7 @@ Square corners throughout (0px): language swatches (10px squares, desaturated to
 ## Components
 
 ### Masthead
-Chart yellow band with ink type, closed by a 6px ink rule. Title left; strapline ("GitHub trending, with memory") and a one-line description centre (max 54ch); dateline right: an "Updated" label, then the age in display caps ("2 HOURS AGO"), then "Chart of Sun 1 Nov 2026, 16:00 UTC" with the time in a `<time>` element. The age leads because it needs no time-zone sums. The dateline is omitted when there is no snapshot or the timestamp does not parse.
+Chart yellow band with black type, closed by a 6px black rule. Title left; strapline ("GitHub trending, with memory") and a one-line description centre (max 54ch); dateline right: an "Updated" label, then the age in display caps ("2 HOURS AGO"), then "Chart of Sun 1 Nov 2026, 16:00 UTC" with the time in a `<time>` element. The age leads because it needs no time-zone sums. The dateline is omitted when there is no snapshot or the timestamp does not parse.
 
 ### Chart Key
 See Layout. Bold ink figures inside Press Grey prose; the NEW sample is static (no press motion).
@@ -328,7 +329,7 @@ When the snapshot is more than 12 hours old (three missed runs), a full-width st
 - **Homepage:** grey with an arrow and no underline; it goes ink and underlined on hover, so each row has one underlined link. A homepage on github.com, www.github.com or any *.github.com host is dropped, because it only leads back to GitHub. Only `http(s)` URLs print.
 - **Gain:** "+1,527" over a 7px bar. The bar's width is the repo's share of the day's top gain, at least 8%, in Bar Gold (Night Chart Yellow on the dark sheet) on a 12% ink track. Screen readers hear "stars today", and "the top gain" on that row.
 - **Top-gain chip:** in GitHub's order, the row with the day's biggest gain (on a tie, the higher position) prints its gain reversed, on an ink chip. In stars order there is no chip, because No. 1 is the top gain.
-- **No. 1:** prints on a Chart Yellow band, the masthead's colour, never reversed in ink. Its rank numeral is larger (44px). The band remaps the tokens: type is black, grey text is Band Grey, a boxed run and the top-gain chip print yellow on black, and the gain bar prints in black. The name's underline is 60% of the text colour, not 45%, because all type on the band is black. A NEW tag on the band gets a 1.5px black edge. The band keeps its colour on hover, closes with a 1px black rule (also as the last row of a column), and on phones reaches 10px into the gutter so its type does not touch the edge. Text selection inside it is black with yellow text. The band marks position 1 in either order.
+- **No. 1:** prints on a Chart Yellow band, the masthead's colour, never reversed in ink. Its rank numeral is larger (44px). The band remaps the tokens: type is black, grey text is Band Grey, a boxed run and the top-gain chip print yellow on black, and the gain bar prints in black. The name's underline is 60% of the text colour, not 45%, because all type on the band is black. A NEW tag on the band gets a 1.5px black edge, and language swatches get a 1px edge at 40% black, so a yellow swatch does not vanish. The band keeps its colour on hover, closes with a 1px black rule (also as the last row of a column), and on phones reaches 10px into the gutter so its type does not touch the edge. Text selection inside it is black with yellow text. The band marks position 1 in either order.
 - **Hover:** yellow wash background (No. 1 keeps its band) and a solid underline on the name.
 - **Focus:** the row draws a 2px ink outline inset 2px when its name link has focus. Other links use a 2px currentColor outline, offset 2px.
 - **Degrades quietly:** a missing language, homepage or topics removes its element. A missing description prints "No description" in italic Press Grey, so every row keeps its shape.
@@ -368,7 +369,7 @@ A 3px ink rule over Press Grey 14px text: the data credit to github.com/trending
 - **Don't** put repos in cards, rounded boxes or shadowed panels.
 - **Don't** round corners.
 - **Don't** add a fourth palette colour; language swatches are data, not palette.
-- **Don't** reverse the No. 1 row in ink; it prints on yellow. Don't mark the top-gain chip in yellow or pink.
+- **Don't** reverse the No. 1 row in ink; it prints on yellow. Don't give the top-gain chip a yellow or pink ground (on the No. 1 band its type is yellow, because the band remaps `--sheet`).
 - **Don't** print avatars; the owner's name is enough.
 - **Don't** print a truncated fragment of a link; hide it whole.
 - **Don't** link a homepage that leads back to GitHub.

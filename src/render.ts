@@ -137,7 +137,7 @@ ${
 </html>`;
 }
 
-// In stars order No. 1 is the top gain already, so the ink chip only marks it in GitHub's order
+// In stars order No. 1 is the top gain already, so the reversed chip only marks it in GitHub's order
 function renderRow(repo: Repo, position: number, isTopGain: boolean, maxGain: number, byStars: boolean): string {
 	const topics = (repo.topics ?? []).slice(0, 3);
 	const description = repo.description ? cleanDescription(repo.description) : "";
@@ -311,7 +311,7 @@ ${fontFace("Archivo", "archivo-v25-latin-ext.woff2", "400 800", LATIN_EXT)}
 :root {
 	--yellow: #ffde17;
 	/* Gain bars: chart yellow is invisible as a thin mark on white, so the light sheet prints them a deep gold */
-	--bar: #977600;
+	--bar: #8a6a00;
 	/* The second spot colour, for NEW only */
 	--pink: #ff3d8b;
 	--black: #111;
@@ -488,7 +488,8 @@ main { padding-top: 0; }
 .row:hover { background: var(--hover); }
 /* Every count prints in ink, with a condensed unit */
 .on-n { font: 800 23px/1 var(--display); color: var(--ink); }
-/* A run of 4 days or more prints boxed in ink, number and unit together, the same shape as NEW */
+/* A run of 4 days or more prints boxed in ink, number and unit together, the same shape as NEW.
+   Inside the No. 1 band it prints yellow on black */
 .run { display: inline-block; padding: 3px 6px 2px; background: var(--ink); color: var(--sheet); white-space: nowrap; }
 .run .on-n, .run .on-l { color: inherit; }
 .on-n.mid { font-size: 22px; }
@@ -559,11 +560,11 @@ main { padding-top: 0; }
 .t + .t::before { content: "·"; margin-right: 8px; }
 .gain { text-align: right; padding-top: 1px; }
 .gain-n { display: inline-block; font: 800 24px/.9 var(--display); }
-/* A gold bar under each gain, scaled to the day's biggest, so the unsorted column still compares
-   and the masthead's colour runs down the chart */
+/* A bar under each gain (gold on the light sheet, yellow on the dark one, black on the No. 1 band),
+   scaled to the day's biggest, so the unsorted column still compares and the masthead's colour runs down the chart */
 .bar { display: flex; height: 7px; margin-top: 6px; background: color-mix(in srgb, var(--ink) 12%, transparent); }
 .bar span { background: var(--bar); }
-/* In GitHub's order the day's biggest gain prints on an ink chip */
+/* In GitHub's order the day's biggest gain prints on a reversed chip: ink, or yellow on black on the No. 1 band */
 .top .gain-n { background: var(--ink); color: var(--sheet); padding: 4px 6px 2px; margin: -4px 0 -2px; }
 
 /* No. 1 prints on a yellow band, the masthead's colour, in black type. The tokens remap inside it,
@@ -585,6 +586,8 @@ main { padding-top: 0; }
 .row.one:hover .repo, .row.one .name:hover .repo { text-decoration-color: currentColor; }
 /* Pink on yellow barely separates, so a NEW tag on the band gets a black edge */
 .row.one .stamp { box-shadow: inset 0 0 0 1.5px var(--black); }
+/* A yellow language swatch would vanish on the band, so swatches there get a thin dark edge */
+.row.one .swatch { outline: 1px solid color-mix(in srgb, var(--black) 40%, transparent); outline-offset: -1px; }
 /* The band closes with its black rule even when it is the last row in a column */
 .col:last-child .row.one:last-child, .rows .row.one:last-child { border-bottom: 1px solid var(--black); }
 .one .pos { font-size: 44px; color: var(--ink); }
@@ -737,7 +740,9 @@ footer {
 	/* Phone rows have no side padding, so the band reaches into the gutter to keep its type off the edge */
 	.row.one { margin: 0 -10px; padding: 14px 10px; }
 	/* The stuck heads cover that reach too, so the band never shows beside them as it scrolls under */
-	.heads::before { content: ""; position: absolute; inset: 0 -10px; z-index: -1; background: var(--sheet); }
+	.heads::before, .heads::after { content: ""; position: absolute; top: 0; bottom: -3px; width: 10px; background: var(--sheet); }
+	.heads::before { left: -10px; }
+	.heads::after { right: -10px; }
 	/* The gain sits level with the repo name, not the owner line above it */
 	.gain { align-self: end; }
 	/* Taps land on the name and the homepage even a little off the text */

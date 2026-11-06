@@ -265,12 +265,22 @@ describe("freshness and fonts", () => {
 			`#${[1, 3, 5].map((i) => Math.round(parseInt(hex6(a).slice(i, i + 2), 16) * p + parseInt(hex6(b).slice(i, i + 2), 16) * (1 - p)).toString(16).padStart(2, "0")).join("")}`;
 		expect(html).toContain("--bar: var(--yellow);");
 		expect(contrast(light("bar"), mix(light("ink"), light("sheet"), 0.12))).toBeGreaterThanOrEqual(3);
+		// The track is see-through, so a hovered row's wash shows through it
+		expect(contrast(light("bar"), mix(light("ink"), light("hover"), 0.12))).toBeGreaterThanOrEqual(3);
+		expect(contrast(dark("yellow"), mix(dark("ink"), dark("hover"), 0.12))).toBeGreaterThanOrEqual(3);
 		expect(contrast(dark("yellow"), mix(dark("ink"), dark("sheet"), 0.12))).toBeGreaterThanOrEqual(3);
 		expect(html).toContain(".bar span { background: var(--bar); }");
 		// The NEW tag prints black on pink in both schemes
 		expect(html).toMatch(/\.stamp \{[^}]*background: var\(--pink\);\s*color: var\(--black\);/);
 		expect(contrast(light("pink"), light("black"))).toBeGreaterThanOrEqual(4.5);
 		expect(contrast(dark("pink"), light("black"))).toBeGreaterThanOrEqual(4.5);
+		// The tag's own edge is its fill against the sheet
+		for (const t of [light, dark]) expect(contrast(t("pink"), t("sheet"))).toBeGreaterThanOrEqual(3);
+		// On the yellow band the gold bar and the pink tag barely separate, so the band prints the bar black
+		// and gives the tag a black edge
+		expect(contrast(light("pink"), light("yellow"))).toBeLessThan(3);
+		expect(html).toContain(".one .bar span { background: var(--black); }");
+		expect(html).toContain(".row.one .stamp { box-shadow: inset 0 0 0 1.5px var(--black); }");
 		// The No. 1 band is yellow, with black type and a deep gold for its grey text
 		const band = html.match(/\.row\.one, \.row\.one:hover \{([^}]+)\}/)?.[1] ?? "";
 		expect(band).toContain("--ink: var(--black);");
