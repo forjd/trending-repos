@@ -366,7 +366,7 @@ body {
 }
 ::selection { background: var(--yellow); color: var(--black); }
 /* The masthead is yellow already, so its selection reverses to black */
-.mast ::selection { background: var(--black); color: var(--yellow); }
+.mast::selection, .mast ::selection { background: var(--black); color: var(--yellow); }
 p { margin: 0; text-wrap: pretty; }
 /* One underline for every link: thin, offset, a quiet tint of the text colour that goes solid on hover */
 a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); }
@@ -441,8 +441,9 @@ h1 {
 .sort a[aria-current] { background: var(--ink); color: var(--sheet); }
 .sort a[aria-current]::before { content: ""; display: inline-block; width: 8px; height: 4px; margin: 0 7px 0 1px; border-left: 2px solid; border-bottom: 2px solid; transform: rotate(-45deg); vertical-align: 3px; }
 .sort a:not([aria-current]):hover { background: var(--hover); }
-/* The current option's text is sheet-coloured, so a currentColor ring would vanish on the sheet */
-.sort a:focus-visible { outline-color: var(--ink); }
+/* The current option's text is sheet-coloured, so a currentColor ring would vanish on the sheet.
+   The focused option paints above its neighbour, so the side of its ring that overlaps it still shows */
+.sort a:focus-visible { position: relative; z-index: 1; outline: 2px solid var(--ink); outline-offset: 2px; }
 .key-legend { display: grid; grid-template-columns: repeat(4, max-content); align-items: center; gap: 8px 40px; }
 .key-sample { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 8px; }
 .key-sample > :first-child { justify-self: start; }

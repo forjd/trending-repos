@@ -305,9 +305,9 @@ describe("focus and selection", () => {
 	it("keeps the switch's focus ring and the masthead's selection visible", () => {
 		const html = renderPage(null);
 		// The current option prints sheet-coloured text, so its ring is ink, not currentColor
-		expect(html).toContain(".sort a:focus-visible { outline-color: var(--ink); }");
+		expect(html).toContain(".sort a:focus-visible { position: relative; z-index: 1; outline: 2px solid var(--ink); outline-offset: 2px; }");
 		// Yellow selection on the yellow masthead would not show
-		expect(html).toContain(".mast ::selection { background: var(--black); color: var(--yellow); }");
+		expect(html).toContain(".mast::selection, .mast ::selection { background: var(--black); color: var(--yellow); }");
 	});
 });
 
